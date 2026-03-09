@@ -32,6 +32,14 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env
+.env.development
+.env.production
+.env.staging
+
+# Firebase sensitive files - NEVER commit these
+GoogleService-Info.plist
+google-services.json
 
 # typescript
 *.tsbuildinfo
