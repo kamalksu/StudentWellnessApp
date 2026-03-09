@@ -8,7 +8,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Image source={require('../../assets/images/owl.png')} style={styles.logo} />
 
-      <Text style={styles.greeting}>Good Morning,</Text>
+      <Text style={styles.greeting}>Good afternoon,</Text>
       <Text style={styles.name}>{user?.displayName || 'Student'} </Text>
       <Text style={styles.subtitle}>How are you feeling today?</Text>
 

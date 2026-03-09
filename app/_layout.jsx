@@ -21,9 +21,14 @@ export default function RootLayout() {
   useEffect(() => {
     if (loading) return;
     const inTabs = segments[0] === '(tabs)';
+    const inWelcome = segments[0] === 'welcome';
+    const inAuth = segments[0] === 'index' || segments[0] === undefined;
+
     if (user && !inTabs) {
       router.replace('/(tabs)/home');
-    } else if (!user && segments[0] !== 'welcome' && inTabs) {
+    } else if (!user && !inWelcome && !inAuth) {
+      router.replace('/welcome');
+    } else if (!user && inAuth) {
       router.replace('/welcome');
     }
   }, [user, loading]);

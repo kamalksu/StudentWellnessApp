@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
 import { auth, db } from '../firebase/config';
 
 export default function SignUpScreen() {
@@ -40,7 +40,10 @@ export default function SignUpScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.logo}>🦉</Text>
+      <Image 
+        source={require('../assets/images/owl.png')} 
+        style={{ width: 120, height: 120, alignSelf: 'center', marginBottom: 16 }}
+      />
       <Text style={styles.title}>Create Account</Text>
       <Text style={styles.subtitle}>Join us today</Text>
 

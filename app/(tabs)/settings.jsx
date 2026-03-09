@@ -1,22 +1,31 @@
 import { deleteUser, EmailAuthProvider, reauthenticateWithCredential, signOut } from 'firebase/auth';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { auth, db } from '../../firebase/config';
 
 export default function SettingsScreen() {
   const [password, setPassword] = useState('');
   const user = auth.currentUser;
 
-  const handleLogout = async () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', onPress: async () => await signOut(auth) }
-      ]
-    );
+const handleLogout = async () => {
+    if (Platform.OS === 'web') {
+      // Use standard browser confirmation for web
+      const confirmLogout = window.confirm('Are you sure you want to logout?');
+      if (confirmLogout) {
+        await signOut(auth);
+      }
+    } else {
+      // Use native Alert for iOS/Android
+      Alert.alert(
+        'Logout',
+        'Are you sure you want to logout?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Logout', onPress: async () => await signOut(auth) }
+        ]
+      );
+    }
   };
 
   const handleDeleteAccount = () => {
