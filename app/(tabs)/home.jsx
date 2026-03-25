@@ -1,11 +1,13 @@
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import HomeHeader from '../../components/home/HomeHeader';
+import MoodPicker from '../../components/home/MoodPicker';
 
 export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <HomeHeader />
+        <MoodPicker/>
         {/* বাকি modules এখানে আসবে একে একে */}
       </ScrollView>
     </SafeAreaView>
