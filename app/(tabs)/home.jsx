@@ -1,4 +1,5 @@
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import CampusEvents from '../../components/home/CampusEvents';
 import HomeHeader from '../../components/home/HomeHeader';
 import InspirationCard from '../../components/home/InspirationCard';
 import MoodPicker from '../../components/home/MoodPicker';
@@ -10,6 +11,7 @@ export default function HomeScreen() {
         <HomeHeader />
         <MoodPicker/>
         <InspirationCard />
+        <CampusEvents />
         {/* বাকি modules এখানে আসবে একে একে */}
       </ScrollView>
     </SafeAreaView>
