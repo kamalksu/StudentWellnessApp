@@ -3,6 +3,8 @@ import CampusEvents from '../../components/home/CampusEvents';
 import HomeHeader from '../../components/home/HomeHeader';
 import InspirationCard from '../../components/home/InspirationCard';
 import MoodPicker from '../../components/home/MoodPicker';
+import Resources from '../../components/home/Resources';
+
 
 export default function HomeScreen() {
   return (
@@ -12,6 +14,7 @@ export default function HomeScreen() {
         <MoodPicker/>
         <InspirationCard />
         <CampusEvents />
+        <Resources />
         {/* বাকি modules এখানে আসবে একে একে */}
       </ScrollView>
     </SafeAreaView>
