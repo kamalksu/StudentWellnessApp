@@ -4,11 +4,13 @@ import HomeHeader from '../../components/home/HomeHeader';
 import InspirationCard from '../../components/home/InspirationCard';
 import MoodPicker from '../../components/home/MoodPicker';
 import Resources from '../../components/home/Resources';
+import TopBar from '../../components/shared/TopBar';
 
 
 export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safe}>
+      <TopBar title="Welcome" />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <HomeHeader />
         <MoodPicker/>
