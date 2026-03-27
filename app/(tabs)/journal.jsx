@@ -11,6 +11,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import NewEntryButton from '../../components/journal/NewEntryButton';
 import PasscodeToggle from '../../components/journal/PasscodeToggle';
 import TopBar from '../../components/shared/TopBar';
 
@@ -107,6 +108,7 @@ useFocusEffect(
       <TopBar title="My Journal" />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <PasscodeToggle />
+        <NewEntryButton />
         {/* বাকি modules আসবে */}
       </ScrollView>
     </SafeAreaView>
