@@ -23,8 +23,9 @@ export default function RootLayout() {
     const inTabs = segments[0] === '(tabs)';
     const inWelcome = segments[0] === 'welcome';
     const inAuth = segments[0] === 'index' || segments[0] === undefined;
+    const inJournal = segments[0] === 'journal';
 
-    if (user && !inTabs) {
+    if (user && !inTabs && !inJournal) {
       router.replace('/(tabs)/home');
     } else if (!user && !inWelcome && !inAuth) {
       router.replace('/welcome');
