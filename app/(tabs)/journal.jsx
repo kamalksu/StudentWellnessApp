@@ -11,8 +11,10 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import JournalTemplates from '../../components/journal/JournalTemplates';
 import NewEntryButton from '../../components/journal/NewEntryButton';
 import PasscodeToggle from '../../components/journal/PasscodeToggle';
+import PastEntries from '../../components/journal/PastEntries';
 import TopBar from '../../components/shared/TopBar';
 
 function PinGate({ onUnlock }) {
@@ -109,6 +111,8 @@ useFocusEffect(
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <PasscodeToggle />
         <NewEntryButton />
+        <JournalTemplates />
+        <PastEntries />
         {/* বাকি modules আসবে */}
       </ScrollView>
     </SafeAreaView>
