@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView from 'react-native-maps';
+const { Marker } = require('react-native-maps');
 
 const EVENT_LOCATIONS = [
   {
