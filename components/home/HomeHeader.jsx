@@ -1,3 +1,5 @@
+import * as Location from 'expo-location';
+import { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { auth } from '../../firebase/config';
 
@@ -20,6 +22,41 @@ function getFormattedDate() {
 export default function HomeHeader() {
   const user = auth.currentUser;
   const name = user?.displayName || 'Student';
+  const [location, setLocation] = useState('Getting location...');
+  const [temperature, setTemperature] = useState(null);
+
+  useEffect(() => {
+    const getLocationAndWeather = async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setLocation('Location unavailable');
+          return;
+        }
+
+        const loc = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = loc.coords;
+
+        // Location name
+        const [place] = await Location.reverseGeocodeAsync({ latitude, longitude });
+        if (place) {
+          setLocation(`${place.city}, ${place.region}`);
+        }
+
+        // Weather from OpenMeteo (no API key needed)
+        const weatherRes = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=fahrenheit`
+        );
+        const weatherData = await weatherRes.json();
+        if (weatherData.current_weather) {
+          setTemperature(Math.round(weatherData.current_weather.temperature));
+        }
+      } catch (error) {
+        setLocation('Location unavailable');
+      }
+    };
+    getLocationAndWeather();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -32,8 +69,11 @@ export default function HomeHeader() {
           <Text style={styles.greeting}>
             {getGreeting()}, <Text style={styles.name}>{name}</Text>
           </Text>
-          <Text style={styles.date}>{getFormattedDate()}</Text>
-          <Text style={styles.campus}>Kennesaw Campus</Text>
+          <Text style={styles.date}>
+            {getFormattedDate()}
+            {temperature !== null ? `${temperature}°F` : ''}
+          </Text>
+          <Text style={styles.campus}>{location}</Text>
         </View>
       </View>
     </View>
