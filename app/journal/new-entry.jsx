@@ -1,16 +1,20 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
     Alert,
     SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
-    TextInput,
     TouchableOpacity,
     View,
 } from 'react-native';
+import {
+    actions,
+    RichEditor,
+    RichToolbar,
+} from 'react-native-pell-rich-editor';
 import { auth, db } from '../../firebase/config';
 
 function getFormattedDate() {
@@ -22,26 +26,32 @@ function getFormattedDate() {
   });
 }
 
-function countWords(text) {
-  return text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
-}
-
 export default function NewEntryScreen() {
-  const [text, setText] = useState('');
+  const { starter, text: existingText, readOnly } = useLocalSearchParams();
+  const isReadOnly = readOnly === 'true';
   const [saving, setSaving] = useState(false);
+  const [wordCount, setWordCount] = useState(0);
+  const richText = useRef();
   const router = useRouter();
   const user = auth.currentUser;
 
+  const handleChange = (html) => {
+    const plain = html.replace(/<[^>]+>/g, '').trim();
+    const count = plain === '' ? 0 : plain.split(/\s+/).length;
+    setWordCount(count);
+  };
+
   const handleSave = async () => {
-    if (!text.trim()) {
+    const html = await richText.current?.getContentHtml();
+    if (!html || html.replace(/<[^>]+>/g, '').trim() === '') {
       Alert.alert('Empty', 'Please write something before saving.');
       return;
     }
     setSaving(true);
     try {
       await addDoc(collection(db, 'users', user.uid, 'journals'), {
-        text: text.trim(),
-        wordCount: countWords(text),
+        text: html,
+        wordCount: wordCount,
         createdAt: serverTimestamp(),
       });
       router.replace('/(tabs)/journal');
@@ -59,35 +69,65 @@ export default function NewEntryScreen() {
         <TouchableOpacity onPress={() => router.replace('/(tabs)/journal')}>
           <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>New Journal Entry</Text>
-        <TouchableOpacity
-          style={[styles.saveButton, saving && styles.saveButtonDisabled]}
-          onPress={handleSave}
-          disabled={saving}>
-          <Text style={styles.saveButtonText}>
-            {saving ? 'Saving...' : 'Save'}
-          </Text>
-        </TouchableOpacity>
+        <Text style={styles.headerTitle}>
+          {isReadOnly ? 'Journal Entry' : 'New Journal Entry'}
+        </Text>
+        {!isReadOnly ? (
+          <TouchableOpacity
+            style={[styles.saveButton, saving && styles.saveButtonDisabled]}
+            onPress={handleSave}
+            disabled={saving}>
+            <Text style={styles.saveButtonText}>
+              {saving ? 'Saving...' : 'Save'}
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={{ width: 60 }} />
+        )}
       </View>
 
-      <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-        {/* Date */}
+      {/* Toolbar */}
+      {!isReadOnly && (
+        <RichToolbar
+          editor={richText}
+          actions={[
+            actions.alignLeft,
+            actions.alignCenter,
+            actions.alignRight,
+            actions.setBold,
+            actions.setItalic,
+            actions.setUnderline,
+            actions.insertBulletsList,
+            actions.insertOrderedList,
+            actions.setStrikethrough,
+            actions.insertImage,
+          ]}
+          style={styles.toolbar}
+          selectedIconTint="#2DD4BF"
+          iconTint="#555"
+        />
+      )}
+
+      <ScrollView style={styles.container}>
         <Text style={styles.date}>{getFormattedDate()}</Text>
 
-        {/* Text Editor */}
-        <TextInput
+        {/* Rich Editor */}
+        <RichEditor
+          ref={richText}
           style={styles.editor}
           placeholder="Today I feel..."
-          placeholderTextColor="#bbb"
-          multiline
-          value={text}
-          onChangeText={setText}
-          autoFocus
-          textAlignVertical="top"
+          initialContentHTML={existingText || starter || ''}
+          onChange={handleChange}
+          disabled={isReadOnly}
+          editorStyle={{
+            backgroundColor: '#fff',
+            color: '#333',
+            fontSize: 16,
+            lineHeight: 26,
+          }}
         />
 
-        {/* Word Count */}
-        <Text style={styles.wordCount}>{countWords(text)} Words</Text>
+        <Text style={styles.wordCount}>{wordCount} Words</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -128,6 +168,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 14,
   },
+  toolbar: {
+    backgroundColor: '#f9f9f9',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
   container: {
     flex: 1,
     padding: 16,
@@ -135,13 +180,14 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 13,
     color: '#999',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   editor: {
-    fontSize: 16,
-    color: '#333',
-    lineHeight: 26,
     minHeight: 400,
+    borderWidth: 1,
+    borderColor: '#eee',
+    borderRadius: 12,
+    padding: 8,
   },
   wordCount: {
     fontSize: 13,
