@@ -1,12 +1,15 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
+import { Colors } from '../../constants/Colors';
 
 export default function TabLayout() {
+  const router = useRouter();
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#2DD4BF',
-        tabBarInactiveTintColor: '#9BA1A6',
+        tabBarActiveTintColor: Colors.primary,
+        tabBarInactiveTintColor: Colors.tabInactive,
         headerShown: false,
         tabBarStyle: {
           backgroundColor: '#fff',
@@ -60,10 +63,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="person" size={size} color={color} />
-          ),
+          href: null, // settings tab hide করো
         }}
       />
     </Tabs>

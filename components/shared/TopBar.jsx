@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../../constants/Colors';
 import { auth } from '../../firebase/config';
 
 export default function TopBar({ title = 'Welcome' }) {
@@ -12,17 +13,13 @@ export default function TopBar({ title = 'Welcome' }) {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>{title}</Text>
+
       <TouchableOpacity
         style={styles.avatar}
         onPress={() => router.push('/(tabs)/settings')}
         activeOpacity={0.7}>
-        <Text style={styles.avatarText}>{initials}</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.title}>{title}</Text>
-
-      <TouchableOpacity style={styles.searchButton} activeOpacity={0.7}>
-        <MaterialIcons name="search" size={24} color="#333" />
+        <MaterialIcons name="person" size={22} color={Colors.primary} />
       </TouchableOpacity>
     </View>
   );
@@ -33,35 +30,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#2DD4BF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
   },
   title: {
-    fontSize: 17,
+    fontSize: 20,
     fontWeight: '700',
-    color: '#333',
+    color: Colors.textPrimary,
   },
-  searchButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#f5f5f5',
+  avatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: Colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
