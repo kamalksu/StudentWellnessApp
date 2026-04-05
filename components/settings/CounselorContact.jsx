@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../../constants/Colors';
 
 export default function CounselorContact() {
   const [expanded, setExpanded] = useState(false);
@@ -15,7 +16,7 @@ export default function CounselorContact() {
         style={styles.card}
         onPress={() => setExpanded(!expanded)}
         activeOpacity={0.7}>
-        <MaterialIcons name="school" size={22} color="#2DD4BF" />
+        <MaterialIcons name="school" size={22} color={Colors.primary} />
         <Text style={styles.label}>Counselor Contact</Text>
         <MaterialIcons
           name={expanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
@@ -31,21 +32,21 @@ export default function CounselorContact() {
           <TouchableOpacity
             style={styles.contactRow}
             onPress={() => Linking.openURL('tel:+14705786600')}>
-            <MaterialIcons name="phone" size={18} color="#2DD4BF" />
+            <MaterialIcons name="phone" size={18} color={Colors.primary} />
             <Text style={styles.contactText}>(470) 578-6600</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.contactRow}
             onPress={() => Linking.openURL('mailto:counseling@kennesaw.edu')}>
-            <MaterialIcons name="email" size={18} color="#2DD4BF" />
+            <MaterialIcons name="email" size={18} color={Colors.primary} />
             <Text style={styles.contactText}>counseling@kennesaw.edu</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.contactRow}
             onPress={() => Linking.openURL('https://counseling.kennesaw.edu')}>
-            <MaterialIcons name="link" size={18} color="#2DD4BF" />
+            <MaterialIcons name="link" size={18} color={Colors.primary} />
             <Text style={styles.contactText}>counseling.kennesaw.edu</Text>
           </TouchableOpacity>
         </View>
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
   },
   contactText: {
     fontSize: 14,
-    color: '#2DD4BF',
+    color: Colors.primary,
     textDecorationLine: 'underline',
   },
 });

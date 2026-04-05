@@ -1,45 +1,54 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../../constants/Colors';
 import { CAMPUS_EVENTS } from '../../constants/eventsData';
 
 export default function EventList({ filter }) {
-  const filtered = filter === 'all'
-    ? CAMPUS_EVENTS
-    : CAMPUS_EVENTS.filter((e) => e.type === filter);
+  const [search, setSearch] = useState('');
 
-  if (filtered.length === 0) {
-    return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>No events found.</Text>
-      </View>
-    );
-  }
+  const filtered = CAMPUS_EVENTS.filter((e) => {
+    const matchFilter = filter === 'all' || e.type === filter;
+    const matchSearch = e.title.toLowerCase().includes(search.toLowerCase());
+    return matchFilter && matchSearch;
+  });
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Upcoming Campus Events</Text>
-      {filtered.map((event) => (
-        <TouchableOpacity
-          key={event.id}
-          style={styles.card}
-          activeOpacity={0.8}>
-          <Image
-            source={{ uri: event.image }}
-            style={styles.image}
-          />
-          <View style={styles.info}>
-            <Text style={styles.eventTitle} numberOfLines={2}>
-              {event.title}
-            </Text>
-            <Text style={styles.eventMeta}>📅 {event.date}</Text>
-            <Text style={styles.eventMeta}>🕐 {event.time} • 📍 {event.location}</Text>
-            <View style={[styles.badge,
-              event.type === 'counseling' ? styles.badgeCounseling : styles.badgeWorkshop
-            ]}>
-              <Text style={styles.badgeText}>{event.category}</Text>
+      <Text style={styles.title}>What's happening around you</Text>
+
+      {/* Search bar */}
+      <View style={styles.searchBar}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search events"
+          placeholderTextColor={Colors.textLight}
+          value={search}
+          onChangeText={setSearch}
+        />
+        <MaterialIcons name="search" size={20} color={Colors.textLight} />
+      </View>
+
+      {/* Event list */}
+      <View style={styles.card}>
+        {filtered.length === 0 ? (
+          <Text style={styles.emptyText}>No events found.</Text>
+        ) : (
+          filtered.map((event, index) => (
+            <View key={event.id}>
+              <TouchableOpacity
+                style={styles.row}
+                activeOpacity={0.7}>
+                <Text style={styles.eventTitle} numberOfLines={1}>
+                  {event.title}
+                </Text>
+                <MaterialIcons name="chevron-right" size={20} color={Colors.textLight} />
+              </TouchableOpacity>
+              {index < filtered.length - 1 && <View style={styles.divider} />}
             </View>
-          </View>
-        </TouchableOpacity>
-      ))}
+          ))
+        )}
+      </View>
     </View>
   );
 }
@@ -53,67 +62,55 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#333',
-    marginBottom: 10,
+    color: Colors.textPrimary,
+    marginBottom: 12,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    color: Colors.textPrimary,
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-    gap: 12,
+    borderRadius: 16,
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
   },
-  image: {
-    width: 70,
-    height: 70,
-    borderRadius: 10,
-    backgroundColor: '#E6F4F1',
-  },
-  info: {
-    flex: 1,
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    justifyContent: 'space-between',
   },
   eventTitle: {
+    flex: 1,
     fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
+    color: Colors.textPrimary,
+    fontWeight: '500',
   },
-  eventMeta: {
-    fontSize: 12,
-    color: '#888',
-    marginTop: 2,
-  },
-  badge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 10,
-    marginTop: 6,
-  },
-  badgeCounseling: {
-    backgroundColor: '#E6F4F1',
-  },
-  badgeWorkshop: {
-    backgroundColor: '#FFF3E0',
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#555',
-  },
-  emptyContainer: {
-    padding: 24,
-    alignItems: 'center',
+  divider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginHorizontal: 16,
   },
   emptyText: {
-    fontSize: 15,
-    color: '#999',
+    padding: 16,
+    textAlign: 'center',
+    color: Colors.textSecondary,
   },
 });

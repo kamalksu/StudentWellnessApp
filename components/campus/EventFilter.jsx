@@ -1,20 +1,26 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Colors } from '../../constants/Colors';
 
 const FILTERS = [
   { id: 'all', label: 'All' },
-  { id: 'counseling', label: 'Counseling' },
-  { id: 'workshop', label: 'Workshops' },
+  { id: 'mental_health', label: 'Mental Health' },
+  { id: 'sports', label: 'Sports' },
+  { id: 'music', label: 'Music' },
 ];
 
 export default function EventFilter({ selected, onSelect }) {
   return (
-    <View style={styles.container}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={styles.container}
+      contentContainerStyle={styles.content}>
       {FILTERS.map((filter) => (
         <TouchableOpacity
           key={filter.id}
           style={[
-            styles.button,
-            selected === filter.id && styles.buttonSelected,
+            styles.chip,
+            selected === filter.id && styles.chipSelected,
           ]}
           onPress={() => onSelect(filter.id)}
           activeOpacity={0.7}>
@@ -27,36 +33,35 @@ export default function EventFilter({ selected, onSelect }) {
           </Text>
         </TouchableOpacity>
       ))}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    gap: 10,
-    marginHorizontal: 16,
-    marginTop: 16,
+    marginTop: 12,
   },
-  button: {
-    paddingHorizontal: 20,
+  content: {
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  chip: {
+    paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#f0f0f0',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderWidth: 1.5,
+    borderColor: Colors.primary,
+    backgroundColor: 'transparent',
   },
-  buttonSelected: {
-    backgroundColor: '#2DD4BF',
-    borderColor: '#2DD4BF',
+  chipSelected: {
+    backgroundColor: Colors.primaryLight,
   },
   label: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 13,
+    color: Colors.primary,
     fontWeight: '500',
   },
   labelSelected: {
-    color: '#fff',
     fontWeight: '700',
   },
 });

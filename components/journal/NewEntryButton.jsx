@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Colors } from '../../constants/Colors';
 
 export default function NewEntryButton() {
   const router = useRouter();
@@ -10,31 +11,27 @@ export default function NewEntryButton() {
       style={styles.button}
       onPress={() => router.push('/journal/new-entry')}
       activeOpacity={0.8}>
-      <MaterialIcons name="edit-note" size={24} color="#555" />
-      <Text style={styles.text}>Let's Start a Journal</Text>
+      <MaterialIcons name="edit-note" size={22} color={Colors.primary} />
+      <Text style={styles.text}>New Entry</Text>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.primaryLight,
     marginHorizontal: 16,
-    marginTop: 12,
-    borderRadius: 12,
+    marginTop: 16,
+    borderRadius: 16,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    justifyContent: 'center',
+    gap: 8,
   },
   text: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.primary,
   },
 });

@@ -1,20 +1,23 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useRef, useState } from 'react';
 import {
-    Alert,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import {
-    actions,
-    RichEditor,
-    RichToolbar,
+  actions,
+  RichEditor,
+  RichToolbar,
 } from 'react-native-pell-rich-editor';
+import { Colors } from '../../constants/Colors';
 import { auth, db } from '../../firebase/config';
 
 function getFormattedDate() {
@@ -31,6 +34,7 @@ export default function NewEntryScreen() {
   const isReadOnly = readOnly === 'true';
   const [saving, setSaving] = useState(false);
   const [wordCount, setWordCount] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
   const richText = useRef();
   const router = useRouter();
   const user = auth.currentUser;
@@ -52,6 +56,7 @@ export default function NewEntryScreen() {
       await addDoc(collection(db, 'users', user.uid, 'journals'), {
         text: html,
         wordCount: wordCount,
+        isLocked: isLocked,
         createdAt: serverTimestamp(),
       });
       router.replace('/(tabs)/journal');
@@ -64,135 +69,157 @@ export default function NewEntryScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.replace('/(tabs)/journal')}>
-          <Text style={styles.backText}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>
-          {isReadOnly ? 'Journal Entry' : 'New Journal Entry'}
-        </Text>
-        {!isReadOnly ? (
+      <LinearGradient
+        colors={[Colors.gradientStart, Colors.gradientEnd]}
+        style={styles.gradient}>
+
+        {/* Header */}
+        <View style={styles.header}>
           <TouchableOpacity
-            style={[styles.saveButton, saving && styles.saveButtonDisabled]}
-            onPress={handleSave}
-            disabled={saving}>
-            <Text style={styles.saveButtonText}>
-              {saving ? 'Saving...' : 'Save'}
-            </Text>
+            onPress={() => router.replace('/(tabs)/journal')}
+            style={styles.backButton}>
+            <Text style={styles.backText}>← New Journal Entry</Text>
           </TouchableOpacity>
-        ) : (
-          <View style={{ width: 60 }} />
+        </View>
+
+        {/* Lock toggle */}
+        {!isReadOnly && (
+          <View style={styles.lockRow}>
+            <Text style={styles.lockText}>🔒 Lock this entry</Text>
+            <Switch
+              value={isLocked}
+              onValueChange={setIsLocked}
+              trackColor={{ false: '#ddd', true: Colors.primary }}
+              thumbColor="#fff"
+            />
+          </View>
         )}
-      </View>
 
-      {/* Toolbar */}
-      {!isReadOnly && (
-        <RichToolbar
-          editor={richText}
-          actions={[
-            actions.alignLeft,
-            actions.alignCenter,
-            actions.alignRight,
-            actions.setBold,
-            actions.setItalic,
-            actions.setUnderline,
-            actions.insertBulletsList,
-            actions.insertOrderedList,
-            actions.setStrikethrough,
-            actions.insertImage,
-          ]}
-          style={styles.toolbar}
-          selectedIconTint="#2DD4BF"
-          iconTint="#555"
-        />
-      )}
+        {/* Toolbar */}
+        {!isReadOnly && (
+          <RichToolbar
+            editor={richText}
+            actions={[
+              actions.undo,
+              actions.redo,
+              actions.setBold,
+              actions.setItalic,
+              actions.setUnderline,
+              actions.setStrikethrough,
+              actions.insertBulletsList,
+              actions.insertOrderedList,
+            ]}
+            style={styles.toolbar}
+            selectedIconTint={Colors.primary}
+            iconTint="#555"
+          />
+        )}
 
-      <ScrollView style={styles.container}>
-        <Text style={styles.date}>{getFormattedDate()}</Text>
+        {/* Editor */}
+        <ScrollView style={styles.editorContainer} keyboardShouldPersistTaps="handled">
+          <Text style={styles.date}>{getFormattedDate()}</Text>
+          <RichEditor
+            ref={richText}
+            style={styles.editor}
+            placeholder="What's on your mind?"
+            initialContentHTML={existingText || starter || ''}
+            onChange={handleChange}
+            disabled={isReadOnly}
+            editorStyle={{
+              backgroundColor: 'transparent',
+              color: Colors.textPrimary,
+              fontSize: 16,
+              lineHeight: 26,
+              paddingHorizontal: 4,
+            }}
+          />
+        </ScrollView>
 
-        {/* Rich Editor */}
-        <RichEditor
-          ref={richText}
-          style={styles.editor}
-          placeholder="Today I feel..."
-          initialContentHTML={existingText || starter || ''}
-          onChange={handleChange}
-          disabled={isReadOnly}
-          editorStyle={{
-            backgroundColor: '#fff',
-            color: '#333',
-            fontSize: 16,
-            lineHeight: 26,
-          }}
-        />
-
-        <Text style={styles.wordCount}>{wordCount} Words</Text>
-      </ScrollView>
+        {/* Save Button */}
+        {!isReadOnly && (
+          <View style={styles.saveContainer}>
+            <TouchableOpacity
+              style={[styles.saveButton, saving && styles.saveButtonDisabled]}
+              onPress={handleSave}
+              disabled={saving}>
+              <Text style={styles.saveButtonText}>
+                {saving ? 'Saving...' : 'Save'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </LinearGradient>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#fff' },
+  safe: { flex: 1, backgroundColor: Colors.gradientStart },
+  gradient: { flex: 1 },
   header: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+  },
+  lockRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    marginHorizontal: 16,
+    marginBottom: 8,
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 12,
   },
-  backText: {
-    fontSize: 15,
-    color: '#2DD4BF',
-    fontWeight: '500',
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#333',
-  },
-  saveButton: {
-    backgroundColor: '#2DD4BF',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  saveButtonDisabled: {
-    backgroundColor: '#aaa',
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontWeight: '600',
+  lockText: {
     fontSize: 14,
+    fontWeight: '600',
+    color: Colors.textPrimary,
   },
   toolbar: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderColor: Colors.border,
   },
-  container: {
+  editorContainer: {
     flex: 1,
     padding: 16,
   },
   date: {
     fontSize: 13,
-    color: '#999',
+    color: Colors.textSecondary,
     marginBottom: 12,
   },
   editor: {
     minHeight: 400,
-    borderWidth: 1,
-    borderColor: '#eee',
-    borderRadius: 12,
+    backgroundColor: '#fff',
+    borderRadius: 16,
     padding: 8,
   },
-  wordCount: {
-    fontSize: 13,
-    color: '#bbb',
-    textAlign: 'right',
-    marginTop: 8,
+  saveContainer: {
+    padding: 16,
+  },
+  saveButton: {
+  backgroundColor: Colors.primaryLight,
+  padding: 16,
+  borderRadius: 16,
+  alignItems: 'center',
+  },
+  saveButtonDisabled: {
+    backgroundColor: '#aaa',
+  },
+  saveButtonText: {
+  color: Colors.primary,
+  fontSize: 16,
+  fontWeight: '700',
   },
 });

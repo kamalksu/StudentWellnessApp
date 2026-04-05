@@ -1,5 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../../constants/Colors';
 
 const TOPICS = [
   {
@@ -28,7 +29,7 @@ export default function WellbeingTopics() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Wellbeing Topics</Text>
+        <Text style={styles.title}>Explore ways to support yourself</Text>
       </View>
 
       {TOPICS.map((topic) => (
@@ -37,7 +38,7 @@ export default function WellbeingTopics() {
           style={styles.card}
           onPress={() => Linking.openURL(topic.url)}
           activeOpacity={0.7}>
-          <MaterialIcons name="folder-open" size={20} color="#2DD4BF" />
+          <MaterialIcons name="folder-open" size={20} color={Colors.primary} />
           <Text style={styles.topicTitle}>{topic.title}</Text>
           <MaterialIcons name="chevron-right" size={20} color="#ccc" />
         </TouchableOpacity>

@@ -1,19 +1,32 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
-import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { Colors } from '../constants/Colors';
 import { auth, db } from '../firebase/config';
 
 export default function SignUpScreen() {
-  const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
 
   const handleSignUp = async () => {
-    if (!fullName || !email || !password || !confirmPassword) {
+    if (!username || !email || !password || !confirmPassword) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
@@ -27,11 +40,11 @@ export default function SignUpScreen() {
     }
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(user, { displayName: fullName });
+      await updateProfile(user, { displayName: username });
       await setDoc(doc(db, 'users', user.uid), {
-        fullName,
+        username,
         email,
-        createdAt: new Date()
+        createdAt: new Date(),
       });
     } catch (error) {
       Alert.alert('Error', error.message);
@@ -39,61 +52,194 @@ export default function SignUpScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Image 
-        source={require('../assets/images/owl.png')} 
-        style={{ width: 120, height: 120, alignSelf: 'center', marginBottom: 16 }}
-      />
-      <Text style={styles.title}>Create Account</Text>
-      <Text style={styles.subtitle}>Join us today</Text>
+    <LinearGradient
+      colors={[Colors.gradientStart, Colors.gradientEnd]}
+      style={styles.gradient}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled">
 
-      <TextInput
-        style={styles.input}
-        placeholder="Full Name"
-        value={fullName}
-        onChangeText={setFullName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email Address"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        textContentType="oneTimeCode"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-        textContentType="oneTimeCode"
-      />
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Create Account</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('/')}>
-        <Text style={styles.link}>Already have an account? Sign In</Text>
-      </TouchableOpacity>
-    </ScrollView>
+          {/* Header */}
+          <View style={styles.header}>
+            <Image
+              source={require('../assets/images/owl.png')}
+              style={styles.owl}
+            />
+            <Text style={styles.title}>Sign up</Text>
+          </View>
+
+          {/* Form */}
+          <View style={styles.form}>
+
+            {/* Username */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Username</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>👤</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter a username"
+                  placeholderTextColor={Colors.textLight}
+                  value={username}
+                  onChangeText={setUsername}
+                  autoCapitalize="none"
+                />
+              </View>
+            </View>
+
+            {/* Email */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Email</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>✉️</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your email"
+                  placeholderTextColor={Colors.textLight}
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                />
+              </View>
+            </View>
+
+            {/* Password */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Password</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>🔒</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password123"
+                  placeholderTextColor={Colors.textLight}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  textContentType="oneTimeCode"
+                />
+              </View>
+            </View>
+
+            {/* Confirm Password */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Confirm Password</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>🔒</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password123"
+                  placeholderTextColor={Colors.textLight}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry
+                  textContentType="oneTimeCode"
+                />
+              </View>
+            </View>
+
+            {/* Sign Up Button */}
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleSignUp}
+              activeOpacity={0.8}>
+              <Text style={styles.buttonText}>Sign up</Text>
+            </TouchableOpacity>
+
+            {/* Sign In Link */}
+            <TouchableOpacity
+              onPress={() => router.push('/')}
+              activeOpacity={0.7}>
+              <Text style={styles.link}>
+                Already have an account?{' '}
+                <Text style={styles.linkBold}>Sign In</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, justifyContent: 'center', padding: 24, backgroundColor: '#fff' },
-  logo: { fontSize: 60, textAlign: 'center', marginBottom: 16 },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#2DD4BF', textAlign: 'center', marginBottom: 8 },
-  subtitle: { fontSize: 16, color: '#999', textAlign: 'center', marginBottom: 32 },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 16, fontSize: 16 },
-  button: { backgroundColor: '#2DD4BF', padding: 16, borderRadius: 8, alignItems: 'center', marginBottom: 16 },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  link: { color: '#2DD4BF', textAlign: 'center', fontSize: 14 }
+  gradient: { flex: 1 },
+  container: { flex: 1 },
+  scroll: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+    paddingVertical: 60,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 32,
+  },
+  owl: {
+    width: 48,
+    height: 48,
+  },
+  title: {
+    fontSize: 34,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    letterSpacing: -0.5,
+  },
+  form: {
+    gap: 16,
+  },
+  inputContainer: {
+    gap: 6,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    gap: 10,
+  },
+  inputIcon: {
+    fontSize: 16,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 14,
+    fontSize: 15,
+    color: Colors.textPrimary,
+  },
+  button: {
+    backgroundColor: Colors.primary,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  link: {
+    textAlign: 'center',
+    fontSize: 14,
+    color: Colors.textSecondary,
+  },
+  linkBold: {
+    color: Colors.primary,
+    fontWeight: '700',
+  },
 });

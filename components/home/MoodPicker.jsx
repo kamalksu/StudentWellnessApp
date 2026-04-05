@@ -2,14 +2,15 @@ import { useRouter } from 'expo-router';
 import { addDoc, collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../../constants/Colors';
 import { auth, db } from '../../firebase/config';
 
 const MOODS = [
-  { id: 'happy',   emoji: '😊', label: 'Happy' },
-  { id: 'sad',     emoji: '😢', label: 'Sad' },
-  { id: 'neutral', emoji: '😐', label: 'Neutral' },
+  { id: 'happy',   emoji: '😄', label: 'Happy' },
+  { id: 'calm',    emoji: '😊', label: 'Calm' },
+  { id: 'anxious', emoji: '😰', label: 'Anxious' },
+  { id: 'sad',     emoji: '😔', label: 'Sad' },
   { id: 'angry',   emoji: '😠', label: 'Angry' },
-  { id: 'sick',    emoji: '🤢', label: 'Sick' },
 ];
 
 function getTodayKey() {
@@ -109,19 +110,9 @@ export default function MoodPicker() {
         })}
       </View>
 
-      <View style={styles.bottomRow}>
-        {selectedMood ? (
-          <Text style={styles.savedText}>✓ Mood saved!</Text>
-        ) : (
-          <View />
-        )}
-        <TouchableOpacity
-          style={styles.writeButton}
-          onPress={() => router.push('/(tabs)/journal')}
-          activeOpacity={0.8}>
-          <Text style={styles.writeButtonText}>Write about it</Text>
-        </TouchableOpacity>
-      </View>
+      {selectedMood && (
+        <Text style={styles.savedText}>✓ Mood saved!</Text>
+      )}
     </View>
   );
 }
@@ -130,7 +121,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     marginHorizontal: 16,
-    marginTop: 16,
+    marginTop: 12,
     borderRadius: 16,
     padding: 16,
     shadowColor: '#000',
@@ -159,8 +150,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   emojiButtonSelected: {
-    borderColor: '#2DD4BF',
-    backgroundColor: '#E6F4F1',
+    borderColor: Colors.primary,
+    backgroundColor: Colors.primaryLight,
   },
   emoji: {
     fontSize: 34,
@@ -179,11 +170,11 @@ const styles = StyleSheet.create({
   },
   savedText: {
     fontSize: 13,
-    color: '#2DD4BF',
+    color: Colors.primary,
     fontWeight: '500',
   },
   writeButton: {
-    backgroundColor: '#2DD4BF',
+    backgroundColor: Colors.primary,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,

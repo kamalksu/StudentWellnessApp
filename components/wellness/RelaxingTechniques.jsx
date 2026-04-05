@@ -20,7 +20,7 @@ const TECHNIQUES = [
 export default function RelaxingTechniques() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Relaxing Techniques</Text>
+      <Text style={styles.title}>Take a moment to reset</Text>
 
       <View style={styles.row}>
         {TECHNIQUES.map((item) => (

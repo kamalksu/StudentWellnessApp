@@ -3,17 +3,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import {
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import JournalTemplates from '../../components/journal/JournalTemplates';
 import NewEntryButton from '../../components/journal/NewEntryButton';
-import PasscodeToggle from '../../components/journal/PasscodeToggle';
 import PastEntries from '../../components/journal/PastEntries';
 import TopBar from '../../components/shared/TopBar';
 
@@ -109,7 +108,7 @@ useFocusEffect(
     <SafeAreaView style={styles.safe}>
       <TopBar title="My Journal" />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <PasscodeToggle />
+        
         <NewEntryButton />
         <JournalTemplates />
         <PastEntries />
