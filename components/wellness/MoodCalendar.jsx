@@ -1,15 +1,16 @@
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../../constants/Colors';
 import { auth, db } from '../../firebase/config';
 
 const MOODS = [
-  { id: 'all', emoji: '🗓️', label: 'All' },
-  { id: 'happy', emoji: '😊', label: 'Happy' },
-  { id: 'sad', emoji: '😢', label: 'Sad' },
-  { id: 'neutral', emoji: '😐', label: 'Neutral' },
-  { id: 'angry', emoji: '😠', label: 'Angry' },
-  { id: 'sick', emoji: '🤢', label: 'Sick' },
+  { id: 'all', emoji: '🗓️', label: 'All', color: '#E0E0E0' },
+  { id: 'happy', emoji: '😄', label: 'Happy', color: '#FFD93D' },
+  { id: 'calm', emoji: '😊', label: 'Calm', color: '#6BCB77' },
+  { id: 'anxious', emoji: '😰', label: 'Anxious', color: '#FFB347' },
+  { id: 'sad', emoji: '😔', label: 'Sad', color: '#4D96FF' },
+  { id: 'angry', emoji: '😠', label: 'Angry', color: '#FF6B6B' },
 ];
 
 const MONTHS = [
@@ -209,7 +210,7 @@ const styles = StyleSheet.create({
   },
   navArrow: {
     fontSize: 16,
-    color: '#2DD4BF',
+    color: Colors.primary,
     paddingHorizontal: 8,
   },
   monthText: {
@@ -236,8 +237,8 @@ const styles = StyleSheet.create({
     borderColor: '#eee',
   },
   filterChipSelected: {
-    backgroundColor: '#E6F4F1',
-    borderColor: '#2DD4BF',
+  backgroundColor: Colors.primaryLight,
+  borderColor: Colors.primary,
   },
   filterEmoji: {
     fontSize: 14,
@@ -247,7 +248,7 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   filterLabelSelected: {
-    color: '#2DD4BF',
+    color: Colors.primary,
     fontWeight: '600',
   },
   calendar: {
@@ -269,8 +270,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   todayCell: {
-    borderWidth: 2,
-    borderColor: '#2DD4BF',
+  borderWidth: 2,
+  borderColor: Colors.primary,
   },
   dimmedCell: {
     opacity: 0.25,
@@ -285,7 +286,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   todayText: {
-    color: '#2DD4BF',
+    color: Colors.primary,
     fontWeight: '700',
   },
   dimmedText: {
