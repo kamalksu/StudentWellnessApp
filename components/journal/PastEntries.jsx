@@ -1,23 +1,34 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../../constants/Colors';
 import { auth, db } from '../../firebase/config';
-
-
-
-function getPreview(text) {
-  return text.length > 60 ? text.substring(0, 60) + '...' : text;
-}
 
 function getFormattedDate(timestamp) {
   if (!timestamp) return '';
   const date = timestamp.toDate();
   return date.toLocaleDateString('en-US', {
+    weekday: 'long',
     month: 'long',
     day: 'numeric',
     year: 'numeric',
   });
+}
+
+function getPlainText(html) {
+  return html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function getPreview(text) {
+  const plain = getPlainText(text);
+  return plain.length > 50 ? plain.substring(0, 50) + '...' : plain;
 }
 
 export default function PastEntries() {
@@ -28,12 +39,10 @@ export default function PastEntries() {
 
   useEffect(() => {
     if (!user) return;
-
     const q = query(
       collection(db, 'users', user.uid, 'journals'),
       orderBy('createdAt', 'desc')
     );
-
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -42,14 +51,13 @@ export default function PastEntries() {
       setEntries(data);
       setLoading(false);
     });
-
     return unsubscribe;
   }, []);
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="small" color="#2DD4BF" />
+        <ActivityIndicator size="small" color={Colors.primary} />
       </View>
     );
   }
@@ -61,7 +69,6 @@ export default function PastEntries() {
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyEmoji}>📖</Text>
           <Text style={styles.emptyText}>No entries yet!</Text>
-          <Text style={styles.emptySubtext}>Start writing your first journal entry.</Text>
         </View>
       </View>
     );
@@ -71,25 +78,30 @@ export default function PastEntries() {
     <View style={styles.container}>
       <Text style={styles.title}>Past Entries</Text>
 
-      {entries.map((entry) => (
-        <TouchableOpacity
-          key={entry.id}
-          style={styles.card}
-          activeOpacity={0.7}
-          onPress={() => router.push({
-            pathname: '/journal/new-entry',
-            params: { entryId: entry.id, text: entry.text, readOnly: 'true' },
-          })}>
-          <View style={styles.emojiContainer}>
-            <Text style={styles.emoji}>📝</Text>
+      <View style={styles.card}>
+        {entries.map((entry, index) => (
+          <View key={entry.id}>
+            <TouchableOpacity
+              style={styles.row}
+              activeOpacity={0.7}
+              onPress={() => router.push({
+                pathname: '/journal/new-entry',
+                params: { entryId: entry.id, text: entry.text, readOnly: 'true' },
+              })}>
+              <MaterialIcons
+                name="insert-drive-file"
+                size={22}
+                color={Colors.primary}
+              />
+              <View style={styles.info}>
+                <Text style={styles.date}>{getFormattedDate(entry.createdAt)}</Text>
+                <Text style={styles.preview}>{getPreview(entry.text)}</Text>
+              </View>
+            </TouchableOpacity>
+            {index < entries.length - 1 && <View style={styles.divider} />}
           </View>
-          <View style={styles.info}>
-            <Text style={styles.date}>{getFormattedDate(entry.createdAt)}</Text>
-            <Text style={styles.preview}>{getPreview(entry.text)}</Text>
-            <Text style={styles.wordCount}>{entry.wordCount} words</Text>
-          </View>
-        </TouchableOpacity>
-      ))}
+        ))}
+      </View>
     </View>
   );
 }
@@ -107,33 +119,24 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#333',
+    color: Colors.textPrimary,
     marginBottom: 10,
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 10,
+    borderRadius: 16,
+    padding: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
   },
-  emojiContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#E6F4F1',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emoji: {
-    fontSize: 22,
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    padding: 14,
   },
   info: {
     flex: 1,
@@ -141,23 +144,24 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
-    marginBottom: 2,
+    color: Colors.textPrimary,
+    marginBottom: 4,
   },
   preview: {
     fontSize: 13,
-    color: '#888',
-    marginBottom: 2,
+    color: Colors.textSecondary,
+    lineHeight: 20,
   },
-  wordCount: {
-    fontSize: 12,
-    color: '#bbb',
+  divider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginHorizontal: 14,
   },
   emptyContainer: {
     alignItems: 'center',
     padding: 24,
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 16,
   },
   emptyEmoji: {
     fontSize: 40,
@@ -165,13 +169,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#999',
-    textAlign: 'center',
+    color: Colors.textSecondary,
   },
 });

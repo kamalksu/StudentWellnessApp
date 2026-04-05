@@ -1,24 +1,33 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../../constants/Colors';
 
 const TEMPLATES = [
   {
-    id: 'excited',
-    emoji: '',
-    label: 'Something I am excited about...',
-    starter: 'Something I am excited about is ',
+    id: 'avoiding',
+    label: 'What am I avoiding, and why?',
+    starter: 'What I am avoiding right now is ',
   },
   {
-    id: 'anxious',
-    emoji: '',
-    label: 'I felt anxious about...',
-    starter: 'I felt anxious about ',
+    id: 'grateful',
+    label: 'What am I grateful for today?',
+    starter: 'Today I am grateful for ',
   },
   {
-    id: 'todo',
-    emoji: '',
-    label: 'To-do plan for this week...',
-    starter: 'My to-do plan for this week:\n1. \n2. \n3. ',
+    id: 'lookingforward',
+    label: "Something I'm looking forward to",
+    starter: "Something I'm looking forward to is ",
+  },
+  {
+    id: 'tomorrow',
+    label: 'What would make tomorrow better?',
+    starter: 'To make tomorrow better, I will ',
+  },
+  {
+    id: 'stressed',
+    label: 'What stressed me out today?',
+    starter: 'Today I felt stressed about ',
   },
 ];
 
@@ -34,18 +43,28 @@ export default function JournalTemplates() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Choose from templates</Text>
+      <View style={styles.card}>
+        <Text style={styles.title}>Templates</Text>
 
-      {TEMPLATES.map((template) => (
-        <TouchableOpacity
-          key={template.id}
-          style={styles.card}
-          onPress={() => handleTemplate(template)}
-          activeOpacity={0.7}>
-          <Text style={styles.emoji}>{template.emoji}</Text>
-          <Text style={styles.label}>{template.label}</Text>
+        {TEMPLATES.map((template) => (
+          <TouchableOpacity
+            key={template.id}
+            style={styles.row}
+            onPress={() => handleTemplate(template)}
+            activeOpacity={0.7}>
+            <MaterialIcons
+              name="edit-note"
+              size={22}
+              color={Colors.primary}
+            />
+            <Text style={styles.label}>{template.label}</Text>
+          </TouchableOpacity>
+        ))}
+
+        <TouchableOpacity style={styles.viewMore} activeOpacity={0.7}>
+          <Text style={styles.viewMoreText}>View More</Text>
         </TouchableOpacity>
-      ))}
+      </View>
     </View>
   );
 }
@@ -55,32 +74,41 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 16,
   },
-  title: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#333',
-    marginBottom: 10,
-  },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 10,
+    borderRadius: 16,
+    padding: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
   },
-  emoji: {
-    fontSize: 22,
+  title: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    marginBottom: 12,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 10,
   },
   label: {
     fontSize: 14,
-    color: '#555',
+    color: Colors.primary,
     flex: 1,
+    fontWeight: '500',
+  },
+  viewMore: {
+    paddingTop: 8,
+    alignItems: 'flex-end',
+  },
+  viewMoreText: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+    fontWeight: '500',
   },
 });
