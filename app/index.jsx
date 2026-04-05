@@ -1,7 +1,20 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
-import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { Colors } from '../constants/Colors';
 import { auth } from '../firebase/config';
 
 export default function SignInScreen() {
@@ -22,47 +35,158 @@ export default function SignInScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={[Colors.gradientStart, Colors.gradientEnd]}
+      style={styles.gradient}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled">
 
-      <Image 
-        source={require('../assets/images/owl.png')} 
-        style={{ width: 120, height: 120, alignSelf: 'center', marginBottom: 16 }}
-      />
-      <Text style={styles.title}>Welcome Back</Text>
-      <Text style={styles.subtitle}>Sign in to continue</Text>
+          {/* Logo */}
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('../assets/images/owl.png')}
+              style={styles.owl}
+            />
+            <Text style={styles.title}>Sign In</Text>
+          </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email Address"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-        <Text style={styles.buttonText}>Sign In</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('/signup')}>
-        <Text style={styles.link}>Don't have an account? Create Account</Text>
-      </TouchableOpacity>
-    </View>
+          {/* Form */}
+          <View style={styles.form}>
+            {/* Email */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Email</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>✉️</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your email"
+                  placeholderTextColor={Colors.textLight}
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                />
+              </View>
+            </View>
+
+            {/* Password */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Password</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>🔒</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password123"
+                  placeholderTextColor={Colors.textLight}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                />
+              </View>
+            </View>
+
+            {/* Sign In Button */}
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleSignIn}
+              activeOpacity={0.8}>
+              <Text style={styles.buttonText}>Sign In</Text>
+            </TouchableOpacity>
+
+            {/* Create Account */}
+            <TouchableOpacity
+              onPress={() => router.push('/signup')}
+              activeOpacity={0.7}>
+              <Text style={styles.link}>
+                Don't have an account?{' '}
+                <Text style={styles.linkBold}>Create Account</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#fff' },
-  logo: { fontSize: 60, textAlign: 'center', marginBottom: 16 },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#2DD4BF', textAlign: 'center', marginBottom: 8 },
-  subtitle: { fontSize: 16, color: '#999', textAlign: 'center', marginBottom: 32 },
-  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 16, fontSize: 16 },
-  button: { backgroundColor: '#2DD4BF', padding: 16, borderRadius: 8, alignItems: 'center', marginBottom: 16 },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  link: { color: '#2DD4BF', textAlign: 'center', fontSize: 14 }
+  gradient: { flex: 1 },
+  container: { flex: 1 },
+  scroll: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+    paddingVertical: 60,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 40,
+    gap: 16,
+  },
+  owl: {
+    width: 100,
+    height: 100,
+  },
+  title: {
+    fontSize: 34,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    letterSpacing: -0.5
+  },
+  form: {
+    gap: 16,
+  },
+  inputContainer: {
+    gap: 6,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    gap: 10,
+  },
+  inputIcon: {
+    fontSize: 16,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 14,
+    fontSize: 15,
+    color: Colors.textPrimary,
+  },
+  button: {
+    backgroundColor: Colors.primary,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  link: {
+    textAlign: 'center',
+    fontSize: 14,
+    color: Colors.textSecondary,
+  },
+  linkBold: {
+    color: Colors.primary,
+    fontWeight: '700',
+  },
 });
