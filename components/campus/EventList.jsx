@@ -4,13 +4,14 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import { Colors } from '../../constants/Colors';
 import { CAMPUS_EVENTS } from '../../constants/eventsData';
 
-export default function EventList({ filter }) {
+export default function EventList({ filter, campus }) {
   const [search, setSearch] = useState('');
 
   const filtered = CAMPUS_EVENTS.filter((e) => {
+    const matchCampus = e.campus === campus;
     const matchFilter = filter === 'all' || e.type === filter;
     const matchSearch = e.title.toLowerCase().includes(search.toLowerCase());
-    return matchFilter && matchSearch;
+    return matchCampus && matchFilter && matchSearch;
   });
 
   return (
