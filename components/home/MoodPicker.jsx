@@ -18,7 +18,7 @@ function getTodayKey() {
   return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 }
 
-export default function MoodPicker() {
+export default function MoodPicker({ onMoodSelect, showWriteButton }) {
   const [selectedMood, setSelectedMood] = useState(null);
   const [saving, setSaving] = useState(false);
   const [existingDocId, setExistingDocId] = useState(null);
@@ -50,6 +50,7 @@ export default function MoodPicker() {
   const handleMoodSelect = async (moodId) => {
     if (saving) return;
     setSelectedMood(moodId);
+    if (onMoodSelect) onMoodSelect(moodId);
     setSaving(true);
 
     try {
@@ -111,8 +112,18 @@ export default function MoodPicker() {
       </View>
 
       {selectedMood && (
-        <Text style={styles.savedText}>✓ Mood saved!</Text>
-      )}
+  <View style={styles.bottomRow}>
+    <Text style={styles.savedText}>✓ Mood saved!</Text>
+    {showWriteButton && (
+      <TouchableOpacity
+        style={styles.writeButton}
+        onPress={() => router.push('/journal/new-entry')}
+        activeOpacity={0.8}>
+        <Text style={styles.writeButtonText}>✏️ What's on your mind?</Text>
+      </TouchableOpacity>
+    )}
+  </View>
+)}
     </View>
   );
 }
