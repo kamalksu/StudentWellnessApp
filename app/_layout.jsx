@@ -44,7 +44,7 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider>  {/* 👈 wrap */}
+    <ThemeProvider> 
       <Slot />
     </ThemeProvider>
   );

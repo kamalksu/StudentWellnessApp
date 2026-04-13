@@ -20,6 +20,10 @@ import {
 import { Colors } from '../../constants/Colors';
 import { auth, db } from '../../firebase/config';
 
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 👈 add
+import PinSetupModal from '../../components/shared/PinSetupModal';
+
+
 function getFormattedDate() {
   return new Date().toLocaleDateString('en-US', {
     month: 'short',
@@ -38,6 +42,7 @@ export default function NewEntryScreen() {
   const richText = useRef();
   const router = useRouter();
   const user = auth.currentUser;
+  const [showPinSetup, setShowPinSetup] = useState(false);
 
   const handleChange = (html) => {
     const plain = html.replace(/<[^>]+>/g, '').trim();
@@ -67,6 +72,21 @@ export default function NewEntryScreen() {
     }
   };
 
+  // Update lock toggle handler
+const handleLockToggle = async (value) => {
+  if (value) {
+    const existingPin = await AsyncStorage.getItem('journal_pin');
+    if (existingPin) {
+      // PIN already set, just enable lock
+      setIsLocked(true);
+    } else {
+      // No PIN set, show setup modal
+      setShowPinSetup(true);
+    }
+  } else {
+    setIsLocked(false);
+  }
+};
   return (
     <SafeAreaView style={styles.safe}>
       <LinearGradient
@@ -88,7 +108,7 @@ export default function NewEntryScreen() {
             <Text style={styles.lockText}>🔒 Lock this entry</Text>
             <Switch
               value={isLocked}
-              onValueChange={setIsLocked}
+              onValueChange={handleLockToggle}
               trackColor={{ false: '#ddd', true: Colors.primary }}
               thumbColor="#fff"
             />
@@ -148,6 +168,17 @@ export default function NewEntryScreen() {
             </TouchableOpacity>
           </View>
         )}
+
+      <PinSetupModal
+        visible={showPinSetup}
+        onSuccess={() => {
+          setIsLocked(true);
+          setShowPinSetup(false);
+        }}
+        onCancel={() => setShowPinSetup(false)}
+      />
+
+
       </LinearGradient>
     </SafeAreaView>
   );

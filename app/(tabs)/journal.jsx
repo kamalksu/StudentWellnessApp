@@ -11,6 +11,7 @@ import JournalTemplates from '../../components/journal/JournalTemplates';
 import NewEntryButton from '../../components/journal/NewEntryButton';
 import PastEntries from '../../components/journal/PastEntries';
 import TopBar from '../../components/shared/TopBar';
+import { Colors } from '../../constants/Colors';
 import { useTheme } from '../../context/ThemeContext'; // 👈 add
 
 function PinGate({ onUnlock }) {
@@ -41,7 +42,7 @@ function PinGate({ onUnlock }) {
 
   return (
     <View style={styles.pinContainer}>
-      <MaterialIcons name="lock" size={48} color="#2DD4BF" />
+      <MaterialIcons name="lock" size={48} color={Colors.primary} />
       <Text style={styles.pinTitle}>My Journal</Text>
       <Text style={styles.pinSubtitle}>Enter your PIN to continue</Text>
       <View style={styles.dotsRow}>{getDots(pin)}</View>
@@ -121,14 +122,14 @@ const styles = StyleSheet.create({
   dotsRow: { flexDirection: 'row', gap: 16, marginBottom: 8 },
   dot: {
     width: 18, height: 18, borderRadius: 9,
-    borderWidth: 2, borderColor: '#2DD4BF',
+    borderWidth: 2, borderColor: Colors.primary,
     backgroundColor: 'transparent',
   },
-  dotFilled: { backgroundColor: '#2DD4BF' },
+  dotFilled: { backgroundColor: Colors.primary },
   hiddenInput: { position: 'absolute', opacity: 0, width: 1, height: 1 },
   errorText: { color: '#FF4444', fontSize: 14, textAlign: 'center' },
   pinButton: {
-    marginTop: 16, backgroundColor: '#2DD4BF',
+    marginTop: 16, backgroundColor: Colors.primary,
     paddingHorizontal: 24, paddingVertical: 12, borderRadius: 20,
   },
   pinButtonText: { color: '#fff', fontSize: 15, fontWeight: '600' },

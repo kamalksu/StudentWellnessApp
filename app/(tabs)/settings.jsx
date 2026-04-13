@@ -1,12 +1,14 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 👈 add
 import { LinearGradient } from 'expo-linear-gradient';
 import { signOut } from 'firebase/auth';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import CounselorContact from '../../components/settings/CounselorContact';
 import CustomizationSettings from '../../components/settings/CustomizationSettings';
 import NotificationsSettings from '../../components/settings/NotificationsSettings';
 import ProfileSection from '../../components/settings/ProfileSection';
+import PinSetupModal from '../../components/shared/PinSetupModal';
 import TopBar from '../../components/shared/TopBar';
 import { Colors } from '../../constants/Colors';
 import { useTheme } from '../../context/ThemeContext';
@@ -20,6 +22,7 @@ export default function SettingsScreen() {
   const [darkMode, setDarkMode] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showCustomization, setShowCustomization] = useState(false);
+  const [showPinSetup, setShowPinSetup] = useState(false);
 
   const handleLogout = async () => {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
@@ -27,6 +30,33 @@ export default function SettingsScreen() {
       { text: 'Log Out', style: 'destructive', onPress: async () => await signOut(auth) },
     ]);
   };
+
+  // Load passcode state on mount
+useEffect(() => {
+  const checkPin = async () => {
+    const saved = await AsyncStorage.getItem('journal_pin');
+    setPasscode(!!saved);
+  };
+  checkPin();
+}, []);
+
+// Update passcode toggle handler
+const handlePasscodeToggle = async (value) => {
+  if (value) {
+    setShowPinSetup(true);
+  } else {
+    Alert.alert('Remove Passcode', 'Are you sure?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove', style: 'destructive', onPress: async () => {
+          await AsyncStorage.removeItem('journal_pin');
+          setPasscode(false);
+        }
+      },
+    ]);
+  }
+};
+
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -74,7 +104,7 @@ export default function SettingsScreen() {
                 <Text style={styles.rowLabel}>Passcode</Text>
                 <Switch
                   value={passcode}
-                  onValueChange={setPasscode}
+                  onValueChange={handlePasscodeToggle}
                   trackColor={{ false: '#ddd', true: Colors.primary }}
                   thumbColor="#fff"
                 />
@@ -118,6 +148,17 @@ export default function SettingsScreen() {
           visible={showCustomization}
           onClose={() => setShowCustomization(false)}
         />
+
+        <PinSetupModal
+          visible={showPinSetup}
+          onSuccess={() => {
+            setPasscode(true);
+            setShowPinSetup(false);
+          }}
+          onCancel={() => setShowPinSetup(false)}
+        />
+
+
       </LinearGradient>
     </SafeAreaView>
   );
