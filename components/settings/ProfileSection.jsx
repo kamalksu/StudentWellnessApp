@@ -1,5 +1,4 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
 import { updateProfile } from 'firebase/auth';
@@ -13,27 +12,20 @@ import { Colors } from '../../constants/Colors';
 import { useTheme } from '../../context/ThemeContext';
 import { auth } from '../../firebase/config';
 
-const PROFILE_IMAGE_KEY = 'profile_image_uri';
+
 const PROFILE_IMAGE_PATH = () => FileSystem.documentDirectory + `profile_image_${Date.now()}.jpg`;
 
-const { profileImage, updateProfileImage } = useTheme();
 
 
 export default function ProfileSection() {
   const user = auth.currentUser;
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(user?.displayName || 'Student');
-  const [photoURI, setPhotoURI] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const { profileImage, updateProfileImage } = useTheme();
 
-  // Load saved image on mount
-  useState(() => {
-    const loadImage = async () => {
-      const saved = await AsyncStorage.getItem(PROFILE_IMAGE_KEY);
-      if (saved) setPhotoURI(saved);
-    };
-    loadImage();
-  });
+
+
 
   const handleSave = async () => {
     try {
