@@ -8,15 +8,17 @@ import MoodCalendar from '../../components/wellness/MoodCalendar';
 import RelaxingTechniques from '../../components/wellness/RelaxingTechniques';
 import WellbeingTopics from '../../components/wellness/WellbeingTopics';
 import { Colors } from '../../constants/Colors';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function WellnessScreen() {
   const [selectedMood, setSelectedMood] = useState(null);
   const router = useRouter();
+  const { backgroundTheme } = useTheme();
 
   return (
     <SafeAreaView style={styles.safe}>
       <LinearGradient
-        colors={[Colors.gradientStart, Colors.gradientEnd]}
+        colors={backgroundTheme.colors}
         style={styles.gradient}>
         <TopBar title="My Wellness" />
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>

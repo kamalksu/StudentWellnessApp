@@ -16,8 +16,10 @@ import EventList from '../../components/campus/EventList';
 import TopBar from '../../components/shared/TopBar';
 import { Colors } from '../../constants/Colors';
 import { CAMPUSES } from '../../constants/eventsData';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function CampusScreen() {
+  const { backgroundTheme } = useTheme();
   const [filter, setFilter] = useState('all');
   const [campus, setCampus] = useState('kennesaw');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -27,7 +29,7 @@ export default function CampusScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <LinearGradient
-        colors={[Colors.gradientStart, Colors.gradientEnd]}
+        colors={backgroundTheme.colors}
         style={styles.gradient}>
         <TopBar title="My Campus Events" />
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>

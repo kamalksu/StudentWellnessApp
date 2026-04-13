@@ -2,6 +2,7 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { ThemeProvider } from '../context/ThemeContext'; // 👈 add
 import { auth } from '../firebase/config';
 
 export default function RootLayout() {
@@ -42,5 +43,9 @@ export default function RootLayout() {
     );
   }
 
-  return <Slot />;
+  return (
+    <ThemeProvider>  {/* 👈 wrap */}
+      <Slot />
+    </ThemeProvider>
+  );
 }

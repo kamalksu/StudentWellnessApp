@@ -4,18 +4,22 @@ import { signOut } from 'firebase/auth';
 import { useState } from 'react';
 import { Alert, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import CounselorContact from '../../components/settings/CounselorContact';
+import CustomizationSettings from '../../components/settings/CustomizationSettings';
 import NotificationsSettings from '../../components/settings/NotificationsSettings';
 import ProfileSection from '../../components/settings/ProfileSection';
 import TopBar from '../../components/shared/TopBar';
 import { Colors } from '../../constants/Colors';
+import { useTheme } from '../../context/ThemeContext';
 import { auth } from '../../firebase/config';
 
 
 export default function SettingsScreen() {
+  const { backgroundTheme } = useTheme();
   const [notifications, setNotifications] = useState(false);
   const [passcode, setPasscode] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showCustomization, setShowCustomization] = useState(false);
 
   const handleLogout = async () => {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
@@ -27,7 +31,7 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <LinearGradient
-        colors={[Colors.gradientStart, Colors.gradientEnd]}
+        colors={backgroundTheme.colors}
         style={styles.gradient}>
         <TopBar title="Profile" />
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -53,7 +57,10 @@ export default function SettingsScreen() {
               <View style={styles.divider} />
 
               {/* Customization */}
-              <TouchableOpacity style={styles.row} activeOpacity={0.7}>
+              <TouchableOpacity 
+                style={styles.row} 
+                activeOpacity={0.7}
+                onPress={() => setShowCustomization(true)}>
                 <MaterialIcons name="edit" size={22} color={Colors.primary} />
                 <Text style={styles.rowLabel}>Customization</Text>
                 <MaterialIcons name="chevron-right" size={22} color={Colors.textLight} />
@@ -104,9 +111,13 @@ export default function SettingsScreen() {
 
         </ScrollView>
         <NotificationsSettings
-  visible={showNotifications}
-  onClose={() => setShowNotifications(false)}
-/>
+          visible={showNotifications}
+          onClose={() => setShowNotifications(false)}
+        />
+        <CustomizationSettings
+          visible={showCustomization}
+          onClose={() => setShowCustomization(false)}
+        />
       </LinearGradient>
     </SafeAreaView>
   );
