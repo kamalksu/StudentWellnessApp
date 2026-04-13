@@ -4,15 +4,18 @@ import { signOut } from 'firebase/auth';
 import { useState } from 'react';
 import { Alert, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import CounselorContact from '../../components/settings/CounselorContact';
+import NotificationsSettings from '../../components/settings/NotificationsSettings';
 import ProfileSection from '../../components/settings/ProfileSection';
 import TopBar from '../../components/shared/TopBar';
 import { Colors } from '../../constants/Colors';
 import { auth } from '../../firebase/config';
 
+
 export default function SettingsScreen() {
   const [notifications, setNotifications] = useState(false);
   const [passcode, setPasscode] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const handleLogout = async () => {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
@@ -38,7 +41,10 @@ export default function SettingsScreen() {
 
             <View style={styles.card}>
               {/* Notifications */}
-              <TouchableOpacity style={styles.row} activeOpacity={0.7}>
+              <TouchableOpacity 
+                style={styles.row} 
+                activeOpacity={0.7}
+                onPress={() => setShowNotifications(true)}>
                 <MaterialIcons name="notifications" size={22} color={Colors.primary} />
                 <Text style={styles.rowLabel}>Notifications</Text>
                 <MaterialIcons name="chevron-right" size={22} color={Colors.textLight} />
@@ -97,6 +103,10 @@ export default function SettingsScreen() {
           </TouchableOpacity>
 
         </ScrollView>
+        <NotificationsSettings
+  visible={showNotifications}
+  onClose={() => setShowNotifications(false)}
+/>
       </LinearGradient>
     </SafeAreaView>
   );
