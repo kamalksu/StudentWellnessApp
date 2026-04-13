@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../constants/Colors';
 import { auth } from '../../firebase/config';
@@ -11,26 +13,35 @@ function getGreeting() {
 
 function getFormattedDate() {
   return new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
+    weekday: 'long', month: 'long', day: 'numeric',
   });
 }
 
 export default function HomeHeader() {
   const user = auth.currentUser;
   const name = user?.displayName || 'Owl';
+  const [photoURI, setPhotoURI] = useState(null);
+
+  useEffect(() => {
+    const loadImage = async () => {
+      const saved = await AsyncStorage.getItem('profile_image_uri');
+      if (saved) setPhotoURI(saved);
+    };
+    loadImage();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../../assets/images/owl.png')}
-        style={styles.owlImage}
-      />
+      {photoURI ? (
+        <Image source={{ uri: photoURI }} style={styles.profileImage} />
+      ) : (
+        <Image
+          source={require('../../assets/images/owl.png')}
+          style={styles.owlImage}
+        />
+      )}
       <View style={styles.textContainer}>
-        <Text style={styles.greeting}>
-          {getGreeting()}, {name}
-        </Text>
+        <Text style={styles.greeting}>{getGreeting()}, {name}</Text>
         <Text style={styles.date}>{getFormattedDate()}</Text>
       </View>
     </View>
@@ -50,26 +61,15 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   owlImage: {
-  width: 44,
-  height: 44,
-  borderRadius: 22,
-  tintColor: Colors.primary,
-
+    width: 44, height: 44,
+    borderRadius: 22,
+    tintColor: Colors.primary,
   },
-  owlEmoji: {
-    fontSize: 24,
+  profileImage: {
+    width: 44, height: 44,
+    borderRadius: 22,
   },
-  textContainer: {
-    flex: 1,
-  },
-  greeting: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-  },
-  date: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-    marginTop: 2,
-  },
+  textContainer: { flex: 1 },
+  greeting: { fontSize: 16, fontWeight: '700', color: Colors.textPrimary },
+  date: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
 });
