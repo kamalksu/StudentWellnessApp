@@ -1,23 +1,16 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../../constants/Colors';
+import { useTheme } from '../../context/ThemeContext';
 import { auth } from '../../firebase/config';
 
 export default function TopBar({ title = 'Welcome' }) {
   const router = useRouter();
   const user = auth.currentUser;
-  const [photoURI, setPhotoURI] = useState(null);
+  const { profileImage } = useTheme();
 
-  useEffect(() => {
-    const loadImage = async () => {
-      const saved = await AsyncStorage.getItem('profile_image_uri');
-      if (saved) setPhotoURI(saved);
-    };
-    loadImage();
-  }, []);
+
 
   return (
     <View style={styles.container}>
@@ -26,8 +19,8 @@ export default function TopBar({ title = 'Welcome' }) {
         style={styles.avatar}
         onPress={() => router.push('/(tabs)/settings')}
         activeOpacity={0.7}>
-        {photoURI ? (
-          <Image source={{ uri: photoURI }} style={styles.avatarImage} />
+        {profileImage ? (
+          <Image source={{ uri: profileImage }} style={styles.avatarImage} />
         ) : (
           <MaterialIcons name="person" size={22} color={Colors.primary} />
         )}

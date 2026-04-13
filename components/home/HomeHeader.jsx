@@ -1,7 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
+
 import { Image, StyleSheet, Text, View } from 'react-native';
+import OwlLogo from '../../assets/images/owl.svg';
 import { Colors } from '../../constants/Colors';
+import { useTheme } from '../../context/ThemeContext';
 import { auth } from '../../firebase/config';
 
 function getGreeting() {
@@ -20,24 +21,17 @@ function getFormattedDate() {
 export default function HomeHeader() {
   const user = auth.currentUser;
   const name = user?.displayName || 'Owl';
-  const [photoURI, setPhotoURI] = useState(null);
-
-  useEffect(() => {
-    const loadImage = async () => {
-      const saved = await AsyncStorage.getItem('profile_image_uri');
-      if (saved) setPhotoURI(saved);
-    };
-    loadImage();
-  }, []);
+  const { profileImage } = useTheme();
 
   return (
     <View style={styles.container}>
-      {photoURI ? (
-        <Image source={{ uri: photoURI }} style={styles.profileImage} />
+      {profileImage ? (
+        <Image source={{ uri: profileImage }} style={styles.profileImage} />
       ) : (
-        <Image
-          source={require('../../assets/images/owl.png')}
-          style={styles.owlImage}
+        <OwlLogo
+          width={44}
+          height={44}
+          color={Colors.primary}  // 👈 blue owl
         />
       )}
       <View style={styles.textContainer}>

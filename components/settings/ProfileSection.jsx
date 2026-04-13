@@ -10,10 +10,13 @@ import {
   TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { Colors } from '../../constants/Colors';
+import { useTheme } from '../../context/ThemeContext';
 import { auth } from '../../firebase/config';
 
 const PROFILE_IMAGE_KEY = 'profile_image_uri';
 const PROFILE_IMAGE_PATH = () => FileSystem.documentDirectory + `profile_image_${Date.now()}.jpg`;
+
+const { profileImage, updateProfileImage } = useTheme();
 
 
 export default function ProfileSection() {
@@ -77,13 +80,9 @@ export default function ProfileSection() {
 const saveImageLocally = async (uri) => {
   setUploading(true);
   try {
-    const newPath = FileSystem.documentDirectory + `profile_image_${Date.now()}.jpg`; // 👈 inline
-    await FileSystem.copyAsync({
-      from: uri,
-      to: newPath,
-    });
-    await AsyncStorage.setItem(PROFILE_IMAGE_KEY, newPath);
-    setPhotoURI(newPath);
+    const newPath = FileSystem.documentDirectory + `profile_image_${Date.now()}.jpg`;
+    await FileSystem.copyAsync({ from: uri, to: newPath });
+    await updateProfileImage(newPath); // 👈 use context
     Alert.alert('✅ Success', 'Profile photo updated!');
   } catch (error) {
     Alert.alert('Error', error.message);
@@ -97,8 +96,8 @@ const saveImageLocally = async (uri) => {
       <View style={styles.row}>
         {/* Avatar with camera icon */}
         <TouchableOpacity onPress={handleImagePick} style={styles.avatarWrapper}>
-          {photoURI ? (
-            <Image source={{ uri: photoURI }} style={styles.avatarImage} />
+          {profileImage ? (  // 👈 use profileImage from context
+            <Image source={{ uri: profileImage }} style={styles.avatarImage} />
           ) : (
             <View style={styles.avatar}>
               <MaterialIcons name="person" size={28} color={Colors.primary} />

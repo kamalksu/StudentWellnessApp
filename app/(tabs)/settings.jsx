@@ -14,7 +14,6 @@ import { Colors } from '../../constants/Colors';
 import { useTheme } from '../../context/ThemeContext';
 import { auth } from '../../firebase/config';
 
-
 export default function SettingsScreen() {
   const { backgroundTheme } = useTheme();
   const [notifications, setNotifications] = useState(false);
@@ -27,7 +26,12 @@ export default function SettingsScreen() {
   const handleLogout = async () => {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Log Out', style: 'destructive', onPress: async () => await signOut(auth) },
+      {
+      text: 'Log Out', style: 'destructive', onPress: async () => {
+        await AsyncStorage.removeItem('profile_image_uri'); // 👈 clear image
+        await signOut(auth);
+      }
+    },
     ]);
   };
 

@@ -33,6 +33,8 @@ export function ThemeProvider({ children }) {
   const [isDarkMode, setIsDarkMode] = useState(false); // ready for later
   const [quotes, setQuotes] = useState(DEFAULT_QUOTES);
   const [templates, setTemplates] = useState(DEFAULT_TEMPLATES);
+  const [profileImage, setProfileImage] = useState(null);
+
 
   // Load saved preferences on startup
   useEffect(() => {
@@ -45,11 +47,14 @@ export function ThemeProvider({ children }) {
       const savedQuotes = await AsyncStorage.getItem('quotes');
       const savedTemplates = await AsyncStorage.getItem('templates');
       const savedDarkMode = await AsyncStorage.getItem('darkMode');
+      const savedProfileImage = await AsyncStorage.getItem('profile_image_uri'); // 👈 add here
+
 
       if (savedTheme) setBackgroundTheme(JSON.parse(savedTheme));
       if (savedQuotes) setQuotes(JSON.parse(savedQuotes));
       if (savedTemplates) setTemplates(JSON.parse(savedTemplates));
       if (savedDarkMode) setIsDarkMode(JSON.parse(savedDarkMode));
+      if (savedProfileImage) setProfileImage(savedProfileImage);
     } catch (error) {
       console.error('Error loading preferences:', error);
     }
@@ -75,12 +80,19 @@ export function ThemeProvider({ children }) {
     await AsyncStorage.setItem('templates', JSON.stringify(newTemplates));
   };
 
+  const updateProfileImage = async (uri) => {
+    setProfileImage(uri);
+    await AsyncStorage.setItem('profile_image_uri', uri);
+  };
+
   return (
     <ThemeContext.Provider value={{
       backgroundTheme,
       isDarkMode,
       quotes,
       templates,
+      profileImage,
+      updateProfileImage,
       updateBackgroundTheme,
       updateDarkMode,
       updateQuotes,

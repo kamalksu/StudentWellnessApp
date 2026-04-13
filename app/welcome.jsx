@@ -13,11 +13,11 @@ export default function WelcomeScreen() {
       style={styles.container}>
 
       <View style={styles.content}>
-<OwlLogo
-  width={120}
-  height={120}
-  fill={Colors.primary}
-/>
+        <OwlLogo
+          width={120}
+          height={120}
+          fill={Colors.primary}
+        />
         <Text style={styles.title}>Welcome to Owlmind</Text>
         <Text style={styles.subtitle}>How are you feeling today?</Text>
       </View>

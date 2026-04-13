@@ -4,7 +4,6 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import {
   Alert,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -12,8 +11,9 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
+import OwlLogo from '../assets/images/owl.svg';
 import { Colors } from '../constants/Colors';
 import { auth } from '../firebase/config';
 
@@ -48,9 +48,10 @@ export default function SignInScreen() {
 
           {/* Logo */}
           <View style={styles.logoContainer}>
-            <Image
-              source={require('../assets/images/owl.png')}
-              style={styles.owl}
+            <OwlLogo
+              width={120}
+              height={120}
+              fill={Colors.primary}
             />
             <Text style={styles.title}>Sign In</Text>
           </View>
