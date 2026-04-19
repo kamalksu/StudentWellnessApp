@@ -18,7 +18,7 @@ export default function WelcomeScreen() {
           height={120}
           fill={Colors.primary}
         />
-        <Text style={styles.title}>Welcome to Owlmind</Text>
+        <Text style={styles.title}>Welcome to Owlness</Text>
         <Text style={styles.subtitle}>How are you feeling today?</Text>
       </View>
 

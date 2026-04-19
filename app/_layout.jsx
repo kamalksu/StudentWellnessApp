@@ -2,7 +2,7 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { ThemeProvider } from '../context/ThemeContext'; // 👈 add
+import { ThemeProvider } from '../context/ThemeContext';
 import { auth } from '../firebase/config';
 
 export default function RootLayout() {
@@ -38,13 +38,13 @@ export default function RootLayout() {
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#2DD4BF" />
+        <ActivityIndicator size="large" color="#5B6EF5" />
       </View>
     );
   }
 
   return (
-    <ThemeProvider> 
+    <ThemeProvider>
       <Slot />
     </ThemeProvider>
   );
