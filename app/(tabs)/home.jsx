@@ -1,4 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import HomeHeader from '../../components/home/HomeHeader';
 import Insight from '../../components/home/Insight';
@@ -13,6 +14,7 @@ export default function HomeScreen() {
   const { backgroundTheme } = useTheme();
   return (
     <SafeAreaView style={styles.safe}>
+      <StatusBar style="dark" />
       <LinearGradient
         colors={backgroundTheme.colors}
         style={styles.gradient}>
