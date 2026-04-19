@@ -8,6 +8,10 @@
     "scheme": "studentwellnessapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "assetBundlePatterns": [
+      "**/*",
+      "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/*.ttf"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.zularbine.StudentWellnessApp",
@@ -27,7 +31,8 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-router",
@@ -41,6 +46,16 @@
           "dark": {
             "backgroundColor": "#000000"
           }
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf",
+            "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf",
+            "node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"
+          ]
         }
       ]
     ],

@@ -1,6 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import OwlLogo from '../assets/images/owl.svg';
 import { Colors } from '../constants/Colors';
 
 export default function WelcomeScreen() {
@@ -12,11 +13,12 @@ export default function WelcomeScreen() {
       style={styles.container}>
 
       <View style={styles.content}>
-        <Image
-          source={require('../assets/images/owl.png')}
-          style={styles.owl}
+        <OwlLogo
+          width={120}
+          height={120}
+          fill={Colors.primary}
         />
-        <Text style={styles.title}>Welcome to Owlmind</Text>
+        <Text style={styles.title}>Welcome to Owlness</Text>
         <Text style={styles.subtitle}>How are you feeling today?</Text>
       </View>
 
@@ -60,6 +62,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     marginBottom: 8,
+    tintColor: Colors.primary,
   },
   title: {
     fontSize: 28,

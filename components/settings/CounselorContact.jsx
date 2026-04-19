@@ -57,7 +57,6 @@ export default function CounselorContact() {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
     marginTop: 8,
   },
   needHelp: {
@@ -102,6 +101,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    paddingVertical: 10,
   },
   contactText: {
     fontSize: 14,

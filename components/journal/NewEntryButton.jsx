@@ -11,7 +11,7 @@ export default function NewEntryButton() {
       style={styles.button}
       onPress={() => router.push('/journal/new-entry')}
       activeOpacity={0.8}>
-      <MaterialIcons name="edit-note" size={22} color={Colors.primary} />
+      <MaterialIcons name="edit-note" size={22} color="#fff" />
       <Text style={styles.text}>New Entry</Text>
     </TouchableOpacity>
   );
@@ -19,7 +19,7 @@ export default function NewEntryButton() {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: Colors.primaryLight,
+    backgroundColor: Colors.primary,
     marginHorizontal: 16,
     marginTop: 16,
     borderRadius: 16,
@@ -32,6 +32,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.primary,
+    color: "#fff",
   },
 });

@@ -1,55 +1,37 @@
-// components/campus/CampusMap.web.jsx
-import { StyleSheet, Text, View } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { CAMPUS_EVENTS, CAMPUSES } from '../../constants/eventsData';
 
-const EVENT_LOCATIONS = [
-  {
-    id: '1',
-    title: 'Recreation Center',
-    coordinate: { latitude: 34.0397, longitude: -84.5800 },
-    color: '#2DD4BF',
-  },
-  {
-    id: '2',
-    title: 'English Building',
-    coordinate: { latitude: 34.0410, longitude: -84.5785 },
-    color: '#FF6B6B',
-  },
-  {
-    id: '3',
-    title: '3D Lab - STEM Building',
-    coordinate: { latitude: 34.0388, longitude: -84.5810 },
-    color: '#6C63FF',
-  },
-  {
-    id: '4',
-    title: 'Student Center',
-    coordinate: { latitude: 34.0402, longitude: -84.5795 },
-    color: '#FF9800',
-  },
-];
+export default function CampusMap({ campus, filter }) {
+  const campusData = CAMPUSES.find((c) => c.id === campus) || CAMPUSES[0];
+  const events = CAMPUS_EVENTS.filter((e) => {
+    const matchCampus = e.campus === campus;
+    const matchFilter = filter === 'all' || e.type === filter;
+    return matchCampus && matchFilter;
+  });
 
-export default function CampusMap() {
+  const { latitude, longitude } = campusData.region;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Kennesaw Campus</Text>
-
-      {/* Google Maps iframe centered on KSU */}
       <iframe
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1000!2d-84.5800!3d34.0397!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88f51e1f5a123455%3A0x1234567890abcdef!2sKennesaw%20State%20University!5e0!3m2!1sen!2sus!4v1"
+        src={`https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1000!2d${longitude}!3d${latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1`}
         width="100%"
-        height="200"
+        height="280"
         style={{ border: 0, display: 'block' }}
         allowFullScreen=""
         loading="lazy"
       />
-
-      {/* Location pins legend */}
       <View style={styles.legend}>
-        {EVENT_LOCATIONS.map((location) => (
-          <View key={location.id} style={styles.legendItem}>
-            <View style={[styles.dot, { backgroundColor: location.color }]} />
-            <Text style={styles.legendText}>{location.title}</Text>
-          </View>
+        {events.map((event) => (
+          <TouchableOpacity
+            key={event.id}
+            style={styles.legendItem}
+            onPress={() => Linking.openURL(
+              `https://www.google.com/maps/search/?api=1&query=${event.coordinate.latitude},${event.coordinate.longitude}`
+            )}>
+            <Text style={styles.pin}>📍</Text>
+            <Text style={styles.legendText}>{event.location}</Text>
+          </TouchableOpacity>
         ))}
       </View>
     </View>
@@ -58,44 +40,19 @@ export default function CampusMap() {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 16,
-    overflow: 'hidden',
-    shadowColor: '#000',
+    marginHorizontal: 16, marginTop: 16,
+    borderRadius: 16, overflow: 'hidden',
+    backgroundColor: '#fff', shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#333',
-    padding: 12,
-    backgroundColor: '#fff',
+    shadowOpacity: 0.06, shadowRadius: 4, elevation: 2,
   },
   legend: {
-    padding: 10,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
+    padding: 10, flexDirection: 'row', flexWrap: 'wrap', gap: 8,
   },
   legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginRight: 12,
-    marginBottom: 4,
+    flexDirection: 'row', alignItems: 'center',
+    gap: 4, marginRight: 12, marginBottom: 4,
   },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  legendText: {
-    fontSize: 12,
-    color: '#555',
-  },
+  pin: { fontSize: 12 },
+  legendText: { fontSize: 12, color: '#555' },
 });

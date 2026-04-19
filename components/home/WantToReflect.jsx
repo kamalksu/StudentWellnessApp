@@ -9,30 +9,24 @@ export default function WantToReflect() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Want to reflect?</Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push('/journal/new-entry')}
-        activeOpacity={0.7}>
-        <MaterialIcons name="edit-note" size={20} color={Colors.primary} />
-        <Text style={styles.buttonText}>Write a Journal Entry</Text>
-        <MaterialIcons name="arrow-forward" size={18} color={Colors.primary} />
-      </TouchableOpacity>
+      <View style={styles.card}>
+        <TouchableOpacity
+          style={styles.row}
+          onPress={() => router.push('/journal/new-entry')}
+          activeOpacity={0.7}>
+          <MaterialIcons name="edit-note" size={20} color={Colors.primary} />
+          <Text style={styles.label}>Write a Journal Entry</Text>
+          <MaterialIcons name="chevron-right" size={20} color={Colors.textLight} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
     marginHorizontal: 16,
     marginTop: 12,
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
   },
   title: {
     fontSize: 15,
@@ -40,17 +34,26 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     marginBottom: 10,
   },
-  button: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 8,
-  padding: 8,
-  marginLeft: 150,
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  buttonText: {
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    gap: 12,
+  },
+  label: {
     flex: 1,
     fontSize: 14,
-    color: Colors.primary,
-    fontWeight: '600',
+    color: Colors.textPrimary,
+    fontWeight: '500',
   },
 });

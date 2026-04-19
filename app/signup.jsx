@@ -5,7 +5,6 @@ import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import {
   Alert,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -13,10 +12,12 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
+import OwlLogo from '../assets/images/owl.svg';
 import { Colors } from '../constants/Colors';
 import { auth, db } from '../firebase/config';
+
 
 export default function SignUpScreen() {
   const [username, setUsername] = useState('');
@@ -65,9 +66,10 @@ export default function SignUpScreen() {
 
           {/* Header */}
           <View style={styles.header}>
-            <Image
-              source={require('../assets/images/owl.png')}
-              style={styles.owl}
+            <OwlLogo
+              width={70}
+              height={70}
+              fill={Colors.primary}
             />
             <Text style={styles.title}>Sign up</Text>
           </View>

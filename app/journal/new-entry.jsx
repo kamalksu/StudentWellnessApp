@@ -1,9 +1,11 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useRef, useState } from 'react';
 import {
   Alert,
+  Keyboard,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -17,6 +19,7 @@ import {
   RichEditor,
   RichToolbar,
 } from 'react-native-pell-rich-editor';
+import PinSetupModal from '../../components/shared/PinSetupModal';
 import { Colors } from '../../constants/Colors';
 import { auth, db } from '../../firebase/config';
 
@@ -35,6 +38,7 @@ export default function NewEntryScreen() {
   const [saving, setSaving] = useState(false);
   const [wordCount, setWordCount] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
+  const [showPinSetup, setShowPinSetup] = useState(false);
   const richText = useRef();
   const router = useRouter();
   const user = auth.currentUser;
@@ -43,6 +47,24 @@ export default function NewEntryScreen() {
     const plain = html.replace(/<[^>]+>/g, '').trim();
     const count = plain === '' ? 0 : plain.split(/\s+/).length;
     setWordCount(count);
+  };
+
+  const handleBack = async () => {
+    const html = await richText.current?.getContentHtml();
+    const hasContent = html && html.replace(/<[^>]+>/g, '').trim() !== '';
+
+    if (hasContent && !isReadOnly) {
+      Alert.alert(
+        'Unsaved Changes',
+        'You have unsaved changes. Are you sure you want to exit?',
+        [
+          { text: 'Stay', style: 'cancel' },
+          { text: 'Exit', style: 'destructive', onPress: () => router.replace('/(tabs)/journal') },
+        ]
+      );
+    } else {
+      router.replace('/(tabs)/journal');
+    }
   };
 
   const handleSave = async () => {
@@ -67,6 +89,19 @@ export default function NewEntryScreen() {
     }
   };
 
+  const handleLockToggle = async (value) => {
+    if (value) {
+      const existingPin = await AsyncStorage.getItem('journal_pin');
+      if (existingPin) {
+        setIsLocked(true);
+      } else {
+        setShowPinSetup(true);
+      }
+    } else {
+      setIsLocked(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safe}>
       <LinearGradient
@@ -76,7 +111,7 @@ export default function NewEntryScreen() {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
-            onPress={() => router.replace('/(tabs)/journal')}
+            onPress={handleBack}
             style={styles.backButton}>
             <Text style={styles.backText}>← New Journal Entry</Text>
           </TouchableOpacity>
@@ -88,7 +123,7 @@ export default function NewEntryScreen() {
             <Text style={styles.lockText}>🔒 Lock this entry</Text>
             <Switch
               value={isLocked}
-              onValueChange={setIsLocked}
+              onValueChange={handleLockToggle}
               trackColor={{ false: '#ddd', true: Colors.primary }}
               thumbColor="#fff"
             />
@@ -116,7 +151,10 @@ export default function NewEntryScreen() {
         )}
 
         {/* Editor */}
-        <ScrollView style={styles.editorContainer} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          style={styles.editorContainer}
+          keyboardShouldPersistTaps="handled"
+          onScrollBeginDrag={Keyboard.dismiss}>
           <Text style={styles.date}>{getFormattedDate()}</Text>
           <RichEditor
             ref={richText}
@@ -148,6 +186,16 @@ export default function NewEntryScreen() {
             </TouchableOpacity>
           </View>
         )}
+
+        <PinSetupModal
+          visible={showPinSetup}
+          onSuccess={() => {
+            setIsLocked(true);
+            setShowPinSetup(false);
+          }}
+          onCancel={() => setShowPinSetup(false)}
+        />
+
       </LinearGradient>
     </SafeAreaView>
   );
@@ -209,17 +257,17 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   saveButton: {
-  backgroundColor: Colors.primaryLight,
-  padding: 16,
-  borderRadius: 16,
-  alignItems: 'center',
+    backgroundColor: Colors.primary,
+    padding: 16,
+    borderRadius: 16,
+    alignItems: 'center',
   },
   saveButtonDisabled: {
     backgroundColor: '#aaa',
   },
   saveButtonText: {
-  color: Colors.primary,
-  fontSize: 16,
-  fontWeight: '700',
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
   },
 });
