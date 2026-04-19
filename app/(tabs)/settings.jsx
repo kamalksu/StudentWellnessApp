@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // 👈 add
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { signOut } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { Alert, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
@@ -9,13 +10,13 @@ import CustomizationSettings from '../../components/settings/CustomizationSettin
 import NotificationsSettings from '../../components/settings/NotificationsSettings';
 import ProfileSection from '../../components/settings/ProfileSection';
 import PinSetupModal from '../../components/shared/PinSetupModal';
-import TopBar from '../../components/shared/TopBar';
 import { Colors } from '../../constants/Colors';
 import { useTheme } from '../../context/ThemeContext';
 import { auth } from '../../firebase/config';
 
 export default function SettingsScreen() {
   const { backgroundTheme } = useTheme();
+  const router = useRouter();
   const [notifications, setNotifications] = useState(false);
   const [passcode, setPasscode] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
@@ -27,47 +28,54 @@ export default function SettingsScreen() {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
       { text: 'Cancel', style: 'cancel' },
       {
-      text: 'Log Out', style: 'destructive', onPress: async () => {
-        await AsyncStorage.removeItem('profile_image_uri'); // 👈 clear image
-        await signOut(auth);
-      }
-    },
-    ]);
-  };
-
-  // Load passcode state on mount
-useEffect(() => {
-  const checkPin = async () => {
-    const saved = await AsyncStorage.getItem('journal_pin');
-    setPasscode(!!saved);
-  };
-  checkPin();
-}, []);
-
-// Update passcode toggle handler
-const handlePasscodeToggle = async (value) => {
-  if (value) {
-    setShowPinSetup(true);
-  } else {
-    Alert.alert('Remove Passcode', 'Are you sure?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Remove', style: 'destructive', onPress: async () => {
-          await AsyncStorage.removeItem('journal_pin');
-          setPasscode(false);
+        text: 'Log Out', style: 'destructive', onPress: async () => {
+          await AsyncStorage.removeItem('profile_image_uri');
+          await signOut(auth);
         }
       },
     ]);
-  }
-};
+  };
 
+  useEffect(() => {
+    const checkPin = async () => {
+      const saved = await AsyncStorage.getItem('journal_pin');
+      setPasscode(!!saved);
+    };
+    checkPin();
+  }, []);
+
+  const handlePasscodeToggle = async (value) => {
+    if (value) {
+      setShowPinSetup(true);
+    } else {
+      Alert.alert('Remove Passcode', 'Are you sure?', [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove', style: 'destructive', onPress: async () => {
+            await AsyncStorage.removeItem('journal_pin');
+            setPasscode(false);
+          }
+        },
+      ]);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safe}>
       <LinearGradient
         colors={backgroundTheme.colors}
         style={styles.gradient}>
-        <TopBar title="Profile" />
+
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Profile</Text>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.closeButton}>
+            <MaterialIcons name="close" size={22} color={Colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
+
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
 
           {/* Profile Section */}
@@ -79,8 +87,8 @@ const handlePasscodeToggle = async (value) => {
 
             <View style={styles.card}>
               {/* Notifications */}
-              <TouchableOpacity 
-                style={styles.row} 
+              <TouchableOpacity
+                style={styles.row}
                 activeOpacity={0.7}
                 onPress={() => setShowNotifications(true)}>
                 <MaterialIcons name="notifications" size={22} color={Colors.primary} />
@@ -91,8 +99,8 @@ const handlePasscodeToggle = async (value) => {
               <View style={styles.divider} />
 
               {/* Customization */}
-              <TouchableOpacity 
-                style={styles.row} 
+              <TouchableOpacity
+                style={styles.row}
                 activeOpacity={0.7}
                 onPress={() => setShowCustomization(true)}>
                 <MaterialIcons name="edit" size={22} color={Colors.primary} />
@@ -144,6 +152,7 @@ const handlePasscodeToggle = async (value) => {
           </TouchableOpacity>
 
         </ScrollView>
+
         <NotificationsSettings
           visible={showNotifications}
           onClose={() => setShowNotifications(false)}
@@ -152,7 +161,6 @@ const handlePasscodeToggle = async (value) => {
           visible={showCustomization}
           onClose={() => setShowCustomization(false)}
         />
-
         <PinSetupModal
           visible={showPinSetup}
           onSuccess={() => {
@@ -161,7 +169,6 @@ const handlePasscodeToggle = async (value) => {
           }}
           onCancel={() => setShowPinSetup(false)}
         />
-
 
       </LinearGradient>
     </SafeAreaView>
@@ -172,6 +179,27 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.gradientStart },
   gradient: { flex: 1 },
   container: { flex: 1 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    backgroundColor: 'transparent',
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  closeButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: Colors.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   section: {
     marginHorizontal: 16,
     marginTop: 16,
@@ -210,14 +238,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   logoutButton: {
-  backgroundColor: Colors.primary,
-  marginHorizontal: 16,
-  marginTop: 24,
-  marginBottom: 32,
-  padding: 16,
-  borderRadius: 16,
-  alignItems: 'center',
-
+    backgroundColor: Colors.primary,
+    marginHorizontal: 16,
+    marginTop: 24,
+    marginBottom: 32,
+    padding: 16,
+    borderRadius: 16,
+    alignItems: 'center',
   },
   logoutText: {
     color: '#fff',

@@ -264,10 +264,11 @@ const styles = StyleSheet.create({
   },
   dayCell: {
     width: '14.28%',
-    aspectRatio: 1,
+    aspectRatio: 0.9,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
+    paddingVertical: 8,
   },
   todayCell: {
   borderWidth: 2,
