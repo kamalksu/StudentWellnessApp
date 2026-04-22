@@ -1,7 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
-import HomeHeader from '../../components/home/HomeHeader';
 import Insight from '../../components/home/Insight';
 import InspirationCard from '../../components/home/InspirationCard';
 import MoodPicker from '../../components/home/MoodPicker';
@@ -18,9 +17,9 @@ export default function HomeScreen() {
       <LinearGradient
         colors={backgroundTheme.colors}
         style={styles.gradient}>
-        <TopBar title="Welcome" />
+        <TopBar showGreeting={true} />
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-          <HomeHeader />
+          
           <MoodPicker />
           <InspirationCard />
           <WantToReflect />

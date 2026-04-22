@@ -1,16 +1,7 @@
-
 import { Image, StyleSheet, Text, View } from 'react-native';
 import OwlLogo from '../../assets/images/owl.svg';
 import { Colors } from '../../constants/Colors';
 import { useTheme } from '../../context/ThemeContext';
-import { auth } from '../../firebase/config';
-
-function getGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 17) return 'Good afternoon';
-  return 'Good evening';
-}
 
 function getFormattedDate() {
   return new Date().toLocaleDateString('en-US', {
@@ -19,8 +10,6 @@ function getFormattedDate() {
 }
 
 export default function HomeHeader() {
-  const user = auth.currentUser;
-  const name = user?.displayName || 'Owl';
   const { profileImage } = useTheme();
 
   return (
@@ -31,13 +20,10 @@ export default function HomeHeader() {
         <OwlLogo
           width={44}
           height={44}
-          color={Colors.primary}  // 👈 blue owl
+          color={Colors.primary}
         />
       )}
-      <View style={styles.textContainer}>
-        <Text style={styles.greeting}>{getGreeting()}, {name}</Text>
-        <Text style={styles.date}>{getFormattedDate()}</Text>
-      </View>
+      <Text style={styles.date}>{getFormattedDate()}</Text>
     </View>
   );
 }
@@ -54,16 +40,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 8,
   },
-  owlImage: {
-    width: 44, height: 44,
-    borderRadius: 22,
-    tintColor: Colors.primary,
-  },
   profileImage: {
-    width: 44, height: 44,
+    width: 44,
+    height: 44,
     borderRadius: 22,
   },
-  textContainer: { flex: 1 },
-  greeting: { fontSize: 16, fontWeight: '700', color: Colors.textPrimary },
-  date: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
+  date: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+    flex: 1,
+  },
 });
