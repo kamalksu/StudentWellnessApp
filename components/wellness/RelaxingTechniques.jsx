@@ -4,16 +4,16 @@ const TECHNIQUES = [
   {
     id: 'breathing',
     title: 'Breathing',
-    description: 'Calm your mind with breathing exercises',
+    description: '2 Minute Breathing Exercise to Calm Anxiety',
     image: 'https://picsum.photos/seed/breathing/200/150',
-    url: 'https://youtu.be/tybOi4hjZFQ',
+    url: 'https://youtu.be/e8NYHuPuUwY?si=ev60jlT25eWCxGX9',
   },
   {
     id: 'meditation',
     title: 'Meditation',
-    description: 'Find peace through guided meditation',
+    description: '2-Minute Guided Meditation to Release Stress',
     image: 'https://picsum.photos/seed/meditation/200/150',
-    url: 'https://youtu.be/inpok4MKVLM',
+    url: 'https://youtu.be/vLhOGEnEedk?si=ik3uJPhtp5-FNLJj',
   },
 ];
 
