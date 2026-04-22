@@ -6,6 +6,8 @@ import { useRef, useState } from 'react';
 import {
   Alert,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -50,16 +52,21 @@ export default function NewEntryScreen() {
   };
 
   const handleBack = async () => {
+    if (isReadOnly) {
+      router.replace('/(tabs)/journal');
+      return;
+    }
+
     const html = await richText.current?.getContentHtml();
     const hasContent = html && html.replace(/<[^>]+>/g, '').trim() !== '';
 
-    if (hasContent && !isReadOnly) {
+    if (hasContent) {
       Alert.alert(
         'Unsaved Changes',
-        'You have unsaved changes. Are you sure you want to exit?',
+        'You have unsaved changes. Would you like to save before exiting?',
         [
-          { text: 'Stay', style: 'cancel' },
           { text: 'Exit', style: 'destructive', onPress: () => router.replace('/(tabs)/journal') },
+          { text: 'Save', onPress: () => handleSave() },
         ]
       );
     } else {
@@ -110,11 +117,19 @@ export default function NewEntryScreen() {
 
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={handleBack}
-            style={styles.backButton}>
+          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
             <Text style={styles.backText}>← New Journal Entry</Text>
           </TouchableOpacity>
+          {!isReadOnly && (
+            <TouchableOpacity
+              style={[styles.saveButtonSmall, saving && styles.saveButtonDisabled]}
+              onPress={handleSave}
+              disabled={saving}>
+              <Text style={styles.saveButtonSmallText}>
+                {saving ? '...' : 'Save'}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Lock toggle */}
@@ -150,42 +165,47 @@ export default function NewEntryScreen() {
           />
         )}
 
-        {/* Editor */}
-        <ScrollView
-          style={styles.editorContainer}
-          keyboardShouldPersistTaps="handled"
-          onScrollBeginDrag={Keyboard.dismiss}>
-          <Text style={styles.date}>{getFormattedDate()}</Text>
-          <RichEditor
-            ref={richText}
-            style={styles.editor}
-            placeholder="What's on your mind?"
-            initialContentHTML={existingText || starter || ''}
-            onChange={handleChange}
-            disabled={isReadOnly}
-            editorStyle={{
-              backgroundColor: 'transparent',
-              color: Colors.textPrimary,
-              fontSize: 16,
-              lineHeight: 26,
-              paddingHorizontal: 4,
-            }}
-          />
-        </ScrollView>
+        {/* Editor with KeyboardAvoidingView */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={120}>
+          <ScrollView
+            style={styles.editorContainer}
+            keyboardShouldPersistTaps="handled"
+            onScrollBeginDrag={Keyboard.dismiss}>
+            <Text style={styles.date}>{getFormattedDate()}</Text>
+            <RichEditor
+              ref={richText}
+              style={styles.editor}
+              placeholder="What's on your mind?"
+              initialContentHTML={existingText || starter || ''}
+              onChange={handleChange}
+              disabled={isReadOnly}
+              editorStyle={{
+                backgroundColor: 'transparent',
+                color: Colors.textPrimary,
+                fontSize: 16,
+                lineHeight: 26,
+                paddingHorizontal: 4,
+              }}
+            />
+          </ScrollView>
 
-        {/* Save Button */}
-        {!isReadOnly && (
-          <View style={styles.saveContainer}>
-            <TouchableOpacity
-              style={[styles.saveButton, saving && styles.saveButtonDisabled]}
-              onPress={handleSave}
-              disabled={saving}>
-              <Text style={styles.saveButtonText}>
-                {saving ? 'Saving...' : 'Save'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
+          {/* Bottom Save Button */}
+          {!isReadOnly && (
+            <View style={styles.saveContainer}>
+              <TouchableOpacity
+                style={[styles.saveButton, saving && styles.saveButtonDisabled]}
+                onPress={handleSave}
+                disabled={saving}>
+                <Text style={styles.saveButtonText}>
+                  {saving ? 'Saving...' : 'Save'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </KeyboardAvoidingView>
 
         <PinSetupModal
           visible={showPinSetup}
@@ -205,6 +225,9 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.gradientStart },
   gradient: { flex: 1 },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 14,
   },
@@ -216,6 +239,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: Colors.textPrimary,
+  },
+  saveButtonSmall: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  saveButtonSmallText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700',
   },
   lockRow: {
     flexDirection: 'row',
@@ -255,19 +289,20 @@ const styles = StyleSheet.create({
   },
   saveContainer: {
     padding: 16,
+    alignItems: 'flex-end',
   },
   saveButton: {
     backgroundColor: Colors.primary,
-    padding: 16,
-    borderRadius: 16,
-    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 20,
   },
   saveButtonDisabled: {
     backgroundColor: '#aaa',
   },
   saveButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
   },
 });
