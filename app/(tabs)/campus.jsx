@@ -1,8 +1,11 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
+  Keyboard,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -23,6 +26,14 @@ export default function CampusScreen() {
   const [filter, setFilter] = useState('all');
   const [campus, setCampus] = useState('kennesaw');
   const [showDropdown, setShowDropdown] = useState(false);
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    const sub = Keyboard.addListener('keyboardDidShow', () => {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    });
+    return () => sub.remove();
+  }, []);
 
   const currentCampus = CAMPUSES.find((c) => c.id === campus);
 
@@ -32,22 +43,31 @@ export default function CampusScreen() {
         colors={backgroundTheme.colors}
         style={styles.gradient}>
         <TopBar title="My Campus Events" />
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-          
-          <EventFilter selected={filter} onSelect={setFilter} />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+          style={{ flex: 1 }}>
+          <ScrollView
+            ref={scrollRef}
+            style={styles.container}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled">
+            
+            <EventFilter selected={filter} onSelect={setFilter} />
 
-          {/* Campus Dropdown */}
-          <TouchableOpacity
-            style={styles.campusDropdown}
-            onPress={() => setShowDropdown(true)}
-            activeOpacity={0.7}>
-            <Text style={styles.campusLabel}>{currentCampus?.label}</Text>
-            <MaterialIcons name="keyboard-arrow-down" size={20} color="#333" />
-          </TouchableOpacity>
+            {/* Campus Dropdown */}
+            <TouchableOpacity
+              style={styles.campusDropdown}
+              onPress={() => setShowDropdown(true)}
+              activeOpacity={0.7}>
+              <Text style={styles.campusLabel}>{currentCampus?.label}</Text>
+              <MaterialIcons name="keyboard-arrow-down" size={20} color="#333" />
+            </TouchableOpacity>
 
-          <CampusMap campus={campus} filter={filter}/>
-          <EventList filter={filter} campus={campus} />
-        </ScrollView>
+            <CampusMap campus={campus} filter={filter}/>
+            <EventList filter={filter} campus={campus} />
+          </ScrollView>
+        </KeyboardAvoidingView>
       </LinearGradient>
 
       {/* Campus Picker Modal */}
