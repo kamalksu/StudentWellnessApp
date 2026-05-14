@@ -46,26 +46,22 @@ export default function SignInScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled">
 
-          {/* Logo */}
           <View style={styles.logoContainer}>
             <OwlLogo
-              width={120}
-              height={120}
+              width={60}
+              height={60}
               fill={Colors.primary}
             />
             <Text style={styles.title}>Sign In</Text>
           </View>
 
-          {/* Form */}
           <View style={styles.form}>
-            {/* Email */}
             <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Email</Text>
+              <Text style={styles.inputLabel}>KSU Email</Text>
               <View style={styles.inputWrapper}>
-                <Text style={styles.inputIcon}>✉️</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter your email"
+                  placeholder="Enter your KSU email"
                   placeholderTextColor={Colors.textLight}
                   value={email}
                   onChangeText={setEmail}
@@ -75,14 +71,12 @@ export default function SignInScreen() {
               </View>
             </View>
 
-            {/* Password */}
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Password</Text>
               <View style={styles.inputWrapper}>
-                <Text style={styles.inputIcon}>🔒</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Password123"
+                  placeholder="Enter password"
                   placeholderTextColor={Colors.textLight}
                   value={password}
                   onChangeText={setPassword}
@@ -91,7 +85,6 @@ export default function SignInScreen() {
               </View>
             </View>
 
-            {/* Sign In Button */}
             <TouchableOpacity
               style={styles.button}
               onPress={handleSignIn}
@@ -99,7 +92,6 @@ export default function SignInScreen() {
               <Text style={styles.buttonText}>Sign In</Text>
             </TouchableOpacity>
 
-            {/* Create Account */}
             <TouchableOpacity
               onPress={() => router.push('/signup')}
               activeOpacity={0.7}>
@@ -125,13 +117,11 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   },
   logoContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 40,
-    gap: 16,
-  },
-  owl: {
-    width: 100,
-    height: 100,
+    gap: 12,
   },
   title: {
     fontSize: 34,
@@ -158,10 +148,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderWidth: 1,
     borderColor: Colors.border,
-    gap: 10,
-  },
-  inputIcon: {
-    fontSize: 16,
   },
   input: {
     flex: 1,
