@@ -19,7 +19,7 @@ export default function WelcomeScreen() {
           fill={Colors.primary}
         />
         <Text style={styles.title}>Welcome to Owlness</Text>
-        <Text style={styles.subtitle}>How are you feeling today?</Text>
+        <Text style={styles.subtitle}>Your campus companion for feeling good</Text>
       </View>
 
       <View style={styles.buttons}>
@@ -36,10 +36,6 @@ export default function WelcomeScreen() {
           activeOpacity={0.8}>
           <Text style={styles.createText}>Create Account</Text>
         </TouchableOpacity>
-
-        <Text style={styles.terms}>
-          By continuing, you agree to our Terms of Service{'\n'}and Privacy Policy
-        </Text>
       </View>
     </LinearGradient>
   );
@@ -49,7 +45,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingVertical: 60,
+    paddingTop: 60,
+    paddingBottom: 80,
     paddingHorizontal: 32,
   },
   content: {
@@ -101,11 +98,5 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontSize: 16,
     fontWeight: '700',
-  },
-  terms: {
-    fontSize: 12,
-    color: Colors.textLight,
-    textAlign: 'center',
-    marginTop: 8,
   },
 });
