@@ -2,7 +2,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState } from 'react';
 import {
-    Alert,
     Modal,
     StyleSheet,
     Text,
@@ -10,6 +9,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { notify } from '../../utils/alert';
 
 export default function PasscodeToggle() {
   const [isEnabled, setIsEnabled] = useState(false);
@@ -61,7 +61,7 @@ export default function PasscodeToggle() {
         if (text === firstPin) {
           handleSavePin(text);
         } else {
-          Alert.alert('Error', 'PINs do not match. Try again.');
+          notify('Error', 'PINs do not match. Try again.');
           setStep(1);
           setPin('');
           setFirstPin('');
@@ -79,7 +79,7 @@ export default function PasscodeToggle() {
     setModalVisible(false);
     setPin('');
     setFirstPin('');
-    Alert.alert('Success', 'Passcode has been set!');
+    notify('Success', 'Passcode has been set!');
   };
 
   const handleVerifyToDisable = async (enteredPin) => {
@@ -89,9 +89,9 @@ export default function PasscodeToggle() {
       setIsEnabled(false);
       setModalVisible(false);
       setPin('');
-      Alert.alert('Success', 'Passcode has been removed.');
+      notify('Success', 'Passcode has been removed.');
     } else {
-      Alert.alert('Error', 'Incorrect PIN. Try again.');
+      notify('Error', 'Incorrect PIN. Try again.');
       setPin('');
     }
   };

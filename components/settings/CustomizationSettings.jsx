@@ -2,11 +2,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import {
-    Alert, Modal, Platform, ScrollView,
+    Modal, Platform, ScrollView,
     StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { Colors } from '../../constants/Colors';
 import { BACKGROUND_THEMES, DEFAULT_QUOTES, DEFAULT_TEMPLATES, useTheme } from '../../context/ThemeContext';
+import { confirmAction } from '../../utils/alert';
 
 export default function CustomizationSettings({ visible, onClose }) {
   const { backgroundTheme, updateBackgroundTheme, quotes, updateQuotes, templates, updateTemplates } = useTheme();
@@ -22,23 +23,17 @@ export default function CustomizationSettings({ visible, onClose }) {
     setNewQuote('');
   };
 
-  const handleDeleteQuote = async (index) => {
-    Alert.alert('Delete Quote', 'Remove this quote?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete', style: 'destructive', onPress: async () => {
-          const updated = quotes.filter((_, i) => i !== index);
-          await updateQuotes(updated);
-        }
-      },
-    ]);
+  const handleDeleteQuote = (index) => {
+    confirmAction('Delete Quote', 'Remove this quote?', async () => {
+      const updated = quotes.filter((_, i) => i !== index);
+      await updateQuotes(updated);
+    }, { confirmLabel: 'Delete' });
   };
 
-  const handleResetQuotes = async () => {
-    Alert.alert('Reset Quotes', 'Restore default quotes?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Reset', onPress: async () => await updateQuotes(DEFAULT_QUOTES) },
-    ]);
+  const handleResetQuotes = () => {
+    confirmAction('Reset Quotes', 'Restore default quotes?', async () => {
+      await updateQuotes(DEFAULT_QUOTES);
+    }, { confirmLabel: 'Reset', destructive: false });
   };
 
   // --- Templates ---
@@ -52,23 +47,17 @@ export default function CustomizationSettings({ visible, onClose }) {
     setNewTemplate('');
   };
 
-  const handleDeleteTemplate = async (id) => {
-    Alert.alert('Delete Template', 'Remove this template?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete', style: 'destructive', onPress: async () => {
-          const updated = templates.filter((t) => t.id !== id);
-          await updateTemplates(updated);
-        }
-      },
-    ]);
+  const handleDeleteTemplate = (id) => {
+    confirmAction('Delete Template', 'Remove this template?', async () => {
+      const updated = templates.filter((t) => t.id !== id);
+      await updateTemplates(updated);
+    }, { confirmLabel: 'Delete' });
   };
 
-  const handleResetTemplates = async () => {
-    Alert.alert('Reset Templates', 'Restore default templates?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Reset', onPress: async () => await updateTemplates(DEFAULT_TEMPLATES) },
-    ]);
+  const handleResetTemplates = () => {
+    confirmAction('Reset Templates', 'Restore default templates?', async () => {
+      await updateTemplates(DEFAULT_TEMPLATES);
+    }, { confirmLabel: 'Reset', destructive: false });
   };
 
   const TABS = [

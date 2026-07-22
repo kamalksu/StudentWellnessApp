@@ -5,12 +5,13 @@ import { updateProfile } from 'firebase/auth';
 import { useState } from 'react';
 import {
   ActivityIndicator,
-  Alert, Image, StyleSheet, Text,
+  Alert, Image, Platform, StyleSheet, Text,
   TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { Colors } from '../../constants/Colors';
 import { useTheme } from '../../context/ThemeContext';
 import { auth } from '../../firebase/config';
+import { notify } from '../../utils/alert';
 
 
 const PROFILE_IMAGE_PATH = () => FileSystem.documentDirectory + `profile_image_${Date.now()}.jpg`;
@@ -31,40 +32,45 @@ export default function ProfileSection() {
     try {
       await updateProfile(user, { displayName: name });
       setEditing(false);
-      Alert.alert('✅ Success', 'Profile updated!');
+      notify('✅ Success', 'Profile updated!');
     } catch (error) {
-      Alert.alert('Error', error.message);
+      notify('Error', error.message);
     }
   };
 
-  const handleImagePick = async () => {
+  const pickFromGallery = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      notify('Permission Required', 'Gallery permission is needed.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true, aspect: [1, 1], quality: 0.7,
+    });
+    if (!result.canceled) await saveImageLocally(result.assets[0].uri);
+  };
+
+  const pickFromCamera = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      notify('Permission Required', 'Camera permission is needed.');
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true, aspect: [1, 1], quality: 0.7,
+    });
+    if (!result.canceled) await saveImageLocally(result.assets[0].uri);
+  };
+
+  const handleImagePick = () => {
+    if (Platform.OS === 'web') {
+      pickFromGallery();
+      return;
+    }
+
     Alert.alert('Profile Photo', 'Choose an option', [
-      {
-        text: 'Gallery', onPress: async () => {
-          const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-          if (status !== 'granted') {
-            Alert.alert('Permission Required', 'Gallery permission is needed.');
-            return;
-          }
-          const result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true, aspect: [1, 1], quality: 0.7,
-          });
-          if (!result.canceled) await saveImageLocally(result.assets[0].uri);
-        }
-      },
-      {
-        text: 'Camera', onPress: async () => {
-          const { status } = await ImagePicker.requestCameraPermissionsAsync();
-          if (status !== 'granted') {
-            Alert.alert('Permission Required', 'Camera permission is needed.');
-            return;
-          }
-          const result = await ImagePicker.launchCameraAsync({
-            allowsEditing: true, aspect: [1, 1], quality: 0.7,
-          });
-          if (!result.canceled) await saveImageLocally(result.assets[0].uri);
-        }
-      },
+      { text: 'Gallery', onPress: pickFromGallery },
+      { text: 'Camera', onPress: pickFromCamera },
       { text: 'Cancel', style: 'cancel' },
     ]);
   };
@@ -75,9 +81,9 @@ const saveImageLocally = async (uri) => {
     const newPath = FileSystem.documentDirectory + `profile_image_${Date.now()}.jpg`;
     await FileSystem.copyAsync({ from: uri, to: newPath });
     await updateProfileImage(newPath); // 👈 use context
-    Alert.alert('✅ Success', 'Profile photo updated!');
+    notify('✅ Success', 'Profile photo updated!');
   } catch (error) {
-    Alert.alert('Error', error.message);
+    notify('Error', error.message);
   } finally {
     setUploading(false);
   }

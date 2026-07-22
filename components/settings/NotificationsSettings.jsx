@@ -2,10 +2,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as Notifications from 'expo-notifications';
 import { useEffect, useState } from 'react';
 import {
-    Alert, Modal, Platform, ScrollView,
+    Modal, Platform, ScrollView,
     StyleSheet, Switch, Text, TouchableOpacity, View,
 } from 'react-native';
 import { Colors } from '../../constants/Colors';
+import { notify } from '../../utils/alert';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -88,12 +89,12 @@ export default function NotificationsSettings({ visible, onClose }) {
     if (value) {
       const granted = permissionGranted || await requestPermissions();
       if (!granted) {
-        Alert.alert('Permission Required', 'Please enable notifications in your device settings.');
+        notify('Permission Required', 'Please enable notifications in your device settings.');
         return;
       }
       setMoodReminder(true);
       await scheduleMoodReminder(selectedHour, selectedMinute, selectedPeriod);
-      Alert.alert('Reminder Set', `Daily mood reminder set for ${selectedHour}:${selectedMinute} ${selectedPeriod}`);
+      notify('Reminder Set', `Daily mood reminder set for ${selectedHour}:${selectedMinute} ${selectedPeriod}`);
     } else {
       setMoodReminder(false);
       await Notifications.cancelAllScheduledNotificationsAsync();
@@ -104,12 +105,12 @@ export default function NotificationsSettings({ visible, onClose }) {
     if (value) {
         const granted = permissionGranted || await requestPermissions();
         if (!granted) {
-        Alert.alert('Permission Required', 'Please enable notifications in your device settings.');
+        notify('Permission Required', 'Please enable notifications in your device settings.');
         return;
         }
         setQuoteNotification(true);
         await scheduleQuoteNotification(quoteHour, quoteMinute, quotePeriod);
-        Alert.alert('Enabled', `Daily inspiration set for ${quoteHour}:${quoteMinute} ${quotePeriod}!`);
+        notify('Enabled', `Daily inspiration set for ${quoteHour}:${quoteMinute} ${quotePeriod}!`);
     } else {
         setQuoteNotification(false);
     }
@@ -119,7 +120,7 @@ export default function NotificationsSettings({ visible, onClose }) {
     setShowTimePicker(false);
     if (moodReminder) {
       await scheduleMoodReminder(selectedHour, selectedMinute, selectedPeriod);
-      Alert.alert('Updated', `Reminder updated to ${selectedHour}:${selectedMinute} ${selectedPeriod}`);
+      notify('Updated', `Reminder updated to ${selectedHour}:${selectedMinute} ${selectedPeriod}`);
     }
   };
 
@@ -127,7 +128,7 @@ export default function NotificationsSettings({ visible, onClose }) {
   setShowQuoteTimePicker(false);
   if (quoteNotification) {
     await scheduleQuoteNotification(quoteHour, quoteMinute, quotePeriod);
-    Alert.alert('Updated', `Inspiration updated to ${quoteHour}:${quoteMinute} ${quotePeriod}`);
+    notify('Updated', `Inspiration updated to ${quoteHour}:${quoteMinute} ${quotePeriod}`);
   }
   };
   return (

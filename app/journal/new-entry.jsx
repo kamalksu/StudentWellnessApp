@@ -22,7 +22,9 @@ import {
   RichToolbar,
 } from 'react-native-pell-rich-editor';
 import PinSetupModal from '../../components/shared/PinSetupModal';
+import { WebRichEditor, WebRichToolbar } from '../../components/journal/WebRichEditor';
 import { Colors } from '../../constants/Colors';
+import { notify } from '../../utils/alert';
 import { auth, db } from '../../firebase/config';
 
 function getFormattedDate() {
@@ -61,6 +63,15 @@ export default function NewEntryScreen() {
     const hasContent = html && html.replace(/<[^>]+>/g, '').trim() !== '';
 
     if (hasContent) {
+      if (Platform.OS === 'web') {
+        if (window.confirm('You have unsaved changes. Click OK to save, or Cancel to exit without saving.')) {
+          handleSave();
+        } else {
+          router.replace('/(tabs)/journal');
+        }
+        return;
+      }
+
       Alert.alert(
         'Unsaved Changes',
         'You have unsaved changes. Would you like to save before exiting?',
@@ -77,7 +88,7 @@ export default function NewEntryScreen() {
   const handleSave = async () => {
     const html = await richText.current?.getContentHtml();
     if (!html || html.replace(/<[^>]+>/g, '').trim() === '') {
-      Alert.alert('Empty', 'Please write something before saving.');
+      notify('Empty', 'Please write something before saving.');
       return;
     }
     setSaving(true);
@@ -90,7 +101,7 @@ export default function NewEntryScreen() {
       });
       router.replace('/(tabs)/journal');
     } catch (error) {
-      Alert.alert('Error', error.message);
+      notify('Error', error.message);
     } finally {
       setSaving(false);
     }
@@ -147,22 +158,26 @@ export default function NewEntryScreen() {
 
         {/* Toolbar */}
         {!isReadOnly && (
-          <RichToolbar
-            editor={richText}
-            actions={[
-              actions.undo,
-              actions.redo,
-              actions.setBold,
-              actions.setItalic,
-              actions.setUnderline,
-              actions.setStrikethrough,
-              actions.insertBulletsList,
-              actions.insertOrderedList,
-            ]}
-            style={styles.toolbar}
-            selectedIconTint={Colors.primary}
-            iconTint="#555"
-          />
+          Platform.OS === 'web' ? (
+            <WebRichToolbar editor={richText} />
+          ) : (
+            <RichToolbar
+              editor={richText}
+              actions={[
+                actions.undo,
+                actions.redo,
+                actions.setBold,
+                actions.setItalic,
+                actions.setUnderline,
+                actions.setStrikethrough,
+                actions.insertBulletsList,
+                actions.insertOrderedList,
+              ]}
+              style={styles.toolbar}
+              selectedIconTint={Colors.primary}
+              iconTint="#555"
+            />
+          )
         )}
 
         {/* Editor with KeyboardAvoidingView */}
@@ -175,21 +190,31 @@ export default function NewEntryScreen() {
             keyboardShouldPersistTaps="handled"
             onScrollBeginDrag={Keyboard.dismiss}>
             <Text style={styles.date}>{getFormattedDate()}</Text>
-            <RichEditor
-              ref={richText}
-              style={styles.editor}
-              placeholder="What's on your mind?"
-              initialContentHTML={existingText || starter || ''}
-              onChange={handleChange}
-              disabled={isReadOnly}
-              editorStyle={{
-                backgroundColor: 'transparent',
-                color: Colors.textPrimary,
-                fontSize: 16,
-                lineHeight: 26,
-                paddingHorizontal: 4,
-              }}
-            />
+            {Platform.OS === 'web' ? (
+              <WebRichEditor
+                ref={richText}
+                placeholder="What's on your mind?"
+                initialContentHTML={existingText || starter || ''}
+                onChange={handleChange}
+                disabled={isReadOnly}
+              />
+            ) : (
+              <RichEditor
+                ref={richText}
+                style={styles.editor}
+                placeholder="What's on your mind?"
+                initialContentHTML={existingText || starter || ''}
+                onChange={handleChange}
+                disabled={isReadOnly}
+                editorStyle={{
+                  backgroundColor: 'transparent',
+                  color: Colors.textPrimary,
+                  fontSize: 16,
+                  lineHeight: 26,
+                  paddingHorizontal: 4,
+                }}
+              />
+            )}
           </ScrollView>
 
           {/* Bottom Save Button */}

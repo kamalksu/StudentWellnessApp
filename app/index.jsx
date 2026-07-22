@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -16,6 +15,7 @@ import {
 import OwlLogo from '../assets/images/owl.svg';
 import { Colors } from '../constants/Colors';
 import { auth } from '../firebase/config';
+import { notify } from '../utils/alert';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
@@ -24,13 +24,13 @@ export default function SignInScreen() {
 
   const handleSignIn = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      notify('Error', 'Please fill in all fields');
       return;
     }
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      Alert.alert('Error', error.message);
+      notify('Error', error.message);
     }
   };
 

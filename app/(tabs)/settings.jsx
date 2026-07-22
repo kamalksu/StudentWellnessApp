@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { signOut } from 'firebase/auth';
 import { useEffect, useState } from 'react';
-import { Alert, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import CounselorContact from '../../components/settings/CounselorContact';
 import CustomizationSettings from '../../components/settings/CustomizationSettings';
 import NotificationsSettings from '../../components/settings/NotificationsSettings';
@@ -13,6 +13,7 @@ import PinSetupModal from '../../components/shared/PinSetupModal';
 import { Colors } from '../../constants/Colors';
 import { useTheme } from '../../context/ThemeContext';
 import { auth } from '../../firebase/config';
+import { confirmAction } from '../../utils/alert';
 
 export default function SettingsScreen() {
   const { backgroundTheme } = useTheme();
@@ -24,16 +25,11 @@ export default function SettingsScreen() {
   const [showCustomization, setShowCustomization] = useState(false);
   const [showPinSetup, setShowPinSetup] = useState(false);
 
-  const handleLogout = async () => {
-    Alert.alert('Log Out', 'Are you sure you want to log out?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Log Out', style: 'destructive', onPress: async () => {
-          await AsyncStorage.removeItem('profile_image_uri');
-          await signOut(auth);
-        }
-      },
-    ]);
+  const handleLogout = () => {
+    confirmAction('Log Out', 'Are you sure you want to log out?', async () => {
+      await AsyncStorage.removeItem('profile_image_uri');
+      await signOut(auth);
+    }, { confirmLabel: 'Log Out' });
   };
 
   useEffect(() => {
@@ -48,15 +44,10 @@ export default function SettingsScreen() {
     if (value) {
       setShowPinSetup(true);
     } else {
-      Alert.alert('Remove Passcode', 'Are you sure?', [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove', style: 'destructive', onPress: async () => {
-            await AsyncStorage.removeItem('journal_pin');
-            setPasscode(false);
-          }
-        },
-      ]);
+      confirmAction('Remove Passcode', 'Are you sure?', async () => {
+        await AsyncStorage.removeItem('journal_pin');
+        setPasscode(false);
+      }, { confirmLabel: 'Remove' });
     }
   };
 

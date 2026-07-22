@@ -4,7 +4,6 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -17,6 +16,7 @@ import {
 import OwlLogo from '../assets/images/owl.svg';
 import { Colors } from '../constants/Colors';
 import { auth, db } from '../firebase/config';
+import { notify } from '../utils/alert';
 
 
 export default function SignUpScreen() {
@@ -28,15 +28,15 @@ export default function SignUpScreen() {
 
   const handleSignUp = async () => {
     if (!username || !email || !password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields');
+      notify('Error', 'Please fill in all fields');
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      notify('Error', 'Passwords do not match');
       return;
     }
     if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
+      notify('Error', 'Password must be at least 6 characters');
       return;
     }
     try {
@@ -48,7 +48,7 @@ export default function SignUpScreen() {
         createdAt: new Date(),
       });
     } catch (error) {
-      Alert.alert('Error', error.message);
+      notify('Error', error.message);
     }
   };
 
